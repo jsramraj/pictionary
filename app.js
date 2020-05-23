@@ -1,16 +1,35 @@
-const app = require('express')();
-const server = require('http').Server(app);
+const express = require('express')();
+const server = require('http').Server(express);
 const io = require('socket.io')(server);
 
+const path = require('path');
+
 const { port } = require('./config');
+
 
 server.listen(port, () => {
     console.log(`Server running at port:${port}`);
 });
 
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/public/index.html');
+// express.use(require('express').static('public'))
+express.use(require('express').static(path.join(__dirname, 'public')));
+
+express.get('/', (req, res) => {
+    res.sendFile(__dirname + '/public/views/index.html');
 });
+
+
+/*
+const app = express();
+app.use(express.static('public'))
+app.listen(port, () => {
+    console.log(`listening on port ${port}`)   
+});
+
+app.get('/', function(req, res){
+    res.sendFile(__dirname + '/public/views/board.html');
+});
+*/
 
 io.on('connection', (socket) => {
     socket.on('draw', function (data) {

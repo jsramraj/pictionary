@@ -1,0 +1,46 @@
+<html>
+
+<head>
+    <title>Play Pictionary</title>
+    <link rel="stylesheet" type="text/css" href="../css/index.css">
+</head>
+
+<body>
+    <div class="background">
+        <div class="form-box">
+            <div class="button-box">
+                <div id="btn"></div>
+                <button type="button" class="toggle-btn" onclick="create()">Create</button>
+                <button type="button" class="toggle-btn" onclick="join()">Join</button>
+            </div>
+            <form id="create" class="input-group">
+                <input type="text" class="input-field" placeholder="No of rounds" required>
+                <input type="text" class="input-field" placeholder="Time to guess" required>
+                <button type="submit" class="submit-button">Create</button>
+            </form>
+            <form id="join" class="input-group">
+                <input type="text" class="input-field" placeholder="Enter private code" required>
+                <button type="submit" class="submit-button">Join</button>
+            </form>
+        </div>
+    </div>
+</body>
+<script>
+    var createForm = document.getElementById("create");
+    var joinForm = document.getElementById("join");
+    var btn = document.getElementById("btn");
+
+    function join() {
+        createForm.style.left = "-400px";
+        joinForm.style.left = "50px";
+        btn.style.left = "110px";
+    }
+
+    function create() {
+        createForm.style.left = "50px";
+        joinForm.style.left = "450px";
+        btn.style.left = "0px";
+    }
+</script>
+
+</html>
