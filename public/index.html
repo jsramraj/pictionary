@@ -2,6 +2,7 @@
 
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" type="text/css" href="ui/index.css" />
 </head>
 
@@ -9,12 +10,15 @@
     <canvas id="myCanvas" width="400" height="400" style="border:1px solid #d3d3d3;">
 </body>
 <script>
+    const socket = io.connect('http://localhost:3300');
     $(document).ready(function () {
         init();
     });
+
+    var ctx;
     function init() {
         var $canvas = $("#myCanvas");
-        var ctx = $canvas[0].getContext('2d');
+        ctx = $canvas[0].getContext('2d');
 
         var canvasOffset = $canvas.offset();
         var leftOffset = canvasOffset.left;
@@ -23,34 +27,52 @@
         console.log($("#myCanvas"));
         var drag = false;
         $canvas.on('mousemove', function (e) {
-            if (drag)
+            if (drag) {
                 draw(e.clientX, e.clientY, e);
+                sendEventToServer(e);
+            }
         });
 
         $canvas.on('mousedown', function (e) {
+            sendEventToServer(e);
             drag = true;
             draw(e.clientX, e.clientY, e);
         });
 
         $canvas.on('mouseup', function (e) {
+            sendEventToServer(e);
             drag = false;
             draw(e.clientX, e.clientY, e);
         });
+    };
 
-        function draw(x, y, event) {
-            if (event.type == "mousedown") {
-                ctx.beginPath()
-                ctx.moveTo(x, y)
-            }
-            else if (event.type == "mousemove") {
-                ctx.lineTo(x, y)
-                ctx.stroke()
-            }
-            else if (event.type == "mouseup") {
-                ctx.closePath()
-            }
-        }
+    function sendEventToServer(e) {
+        socket.emit('draw', { x : e.clientX, y : e.clientY, type : event.type})
     }
+
+    function draw(x, y, event) {
+        if (event.type == "mousedown") {
+            ctx.beginPath()
+            ctx.moveTo(x, y)
+        }
+        else if (event.type == "mousemove") {
+            ctx.lineTo(x, y)
+            ctx.stroke()
+        }
+        else if (event.type == "mouseup") {
+            ctx.closePath()
+        }
+    };
+
+    socket.on('draw', (event) => {
+        var eventJSOn = JSON.stringify(event);
+        // console.log('draw ' + eventJSOn );
+        // console.log('x ' + event.x );
+        // console.log('y ' + event.y );
+        // console.log('t ' + event.type );
+        // var event = data;
+        draw(event.x, event.y, event);
+    });
 </script>
 
 </html>
