@@ -1,0 +1,13 @@
+{
+  "name": "pictionary",
+  "version": "1.0.0",
+  "description": "Realtime online Pictionary Game",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon -L --exec npm start",
+    "test": "mocha --reporter spec"
+  },
+  "author": "Ramaraj T",
+  "license": "MIT"
+}
