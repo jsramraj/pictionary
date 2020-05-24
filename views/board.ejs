@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <div class="row">
+    <div class="background">
         <div class="player-column">
             <table id="players">
                 <%players.map( player => {%>
@@ -20,7 +20,7 @@
             </table>
         </div>
         <div class="canvas-column">
-            <canvas id="myCanvas" width="400" height="400" style="border:1px solid #d3d3d3;">
+            <canvas id="myCanvas" width="600px" height="600px" class="canvas"">
         </div>
         <div class="chat-column"></div>
     </div>
