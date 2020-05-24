@@ -41,4 +41,4 @@ const getPlayers = function (roomName) {
     return [];
 }
 
-module.exports = { createRoom, addPlayerToRoom, getPlayers }
+module.exports = { createRoom, addPlayerToRoom, getPlayer, getPlayers }

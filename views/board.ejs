@@ -22,7 +22,13 @@
         <div class="canvas-column">
             <canvas id="myCanvas" width="600px" height="600px" class="canvas"">
         </div>
-        <div class="chat-column"></div>
+        <div class=" chat-column">
+                <ul class="messages" id="messages"></ul>
+                <form id="message-form" class="message-form" action="">
+                    <input class="message-form-input" id="m" autocomplete="off" />
+                    <button class="message-form-button">Send</button>
+                </form>
+        </div>
     </div>
 </body>
 <script>
@@ -31,6 +37,19 @@
         init();
         joinRoom();
         getPlayers();
+    });
+
+    $('#message-form').submit(function (e) {
+        console.log('send message');
+        e.preventDefault(); // prevents page reloading
+
+        var jsonUserData = JSON.parse(sessionStorage.room);
+        var playerData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
+        var data = { message: $('#m').val(), playerData: playerData };
+
+        socket.emit('message', data);
+        $('#m').val('');
+        return false;
     });
 
     var ctx;
@@ -131,6 +150,12 @@
     socket.on('connectToRoom', (event) => {
         console.log(event);
         getPlayers();
+    });
+
+    socket.on('message', (messageData) => {
+        console.log(messageData);
+        let messageJson = JSON.parse(messageData);
+        $('#messages').append($('<li>').text(messageJson.player.playerName + ": " + messageJson.message));
     });
 </script>
 
