@@ -2,6 +2,7 @@
 
 <head>
     <title>Play Pictionary</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../css/index.css">
     <link rel="stylesheet" type="text/css" href="../css/stepper.css">
 </head>
@@ -16,8 +17,8 @@
                 <button type="button" class="toggle-btn" onclick="create()">Create</button>
                 <button type="button" class="toggle-btn" onclick="join()">Join</button>
             </div>
-            <form id="create" class="input-group" autocomplete="off">
-                <input type="text" class="input-field" placeholder="Enter player name" required>
+            <form id="createForm" class="input-group">
+                <input type="text" class="input-field" id="player_name" placeholder="Enter player name" required>
                 <p class="space_30"></p>
 
                 <div class="input-label">
@@ -26,7 +27,7 @@
                 <div class="number-input">
                     <button type="button"
                         onclick="this.parentNode.querySelector('input[type=number]').stepDown()"></button>
-                    <input class="quantity" min="1" max="10" name="quantity" value="1" type="number">
+                    <input class="quantity" min="1" max="10" id="no_of_rounds" value="1" type="number">
                     <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
                         class="plus"></button>
                 </div>
@@ -38,7 +39,7 @@
                 <div class="number-input">
                     <button type="button"
                         onclick="this.parentNode.querySelector('input[type=number]').stepDown()"></button>
-                    <input class="quantity" min="30" max="180" name="quantity" value="90" step="10" type="number">
+                    <input class="quantity" min="30" max="180" id="time_to_guess" value="90" step="10" type="number">
                     <button type="button" onclick="this.parentNode.querySelector('input[type=number]').stepUp()"
                         class="plus"></button>
                 </div>
@@ -70,6 +71,30 @@
         joinForm.style.left = "450px";
         btn.style.left = "0px";
     }
+
+    $('#createForm').submit(function (e) {
+        e.preventDefault();
+        var postData = {
+            playerName: $('#player_name').val(),
+            noOfRounds: $('#no_of_rounds').val(),
+            timeToGuess: $('#time_to_guess').val()
+        };
+        console.log(postData);
+        console.log(JSON.stringify(postData));
+
+        $.ajax({
+            url: "/createRoom",
+            type: "POST",
+            dataType: "json",
+            data: postData,
+            success: function (data) {
+                console.log(data);
+                if (typeof (localStorage) != "undefined") {
+                    localStorage.room = data;
+                }
+            }
+        });
+    });
 </script>
 
 </html>

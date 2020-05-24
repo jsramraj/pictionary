@@ -1,21 +1,41 @@
-const express = require('express')();
-const server = require('http').Server(express);
-const io = require('socket.io')(server);
+const app = require('express')();
+const server = require('http').Server(app);
 
 const path = require('path');
+var bodyParser = require('body-parser');
 
 const { port } = require('./config');
+let socket = require('./app/controllers/socker-server')
+let roomManager = require('./app/controllers/room-manager')
+let playerManager = require('./app/controllers/player-manager')
 
+app.use(bodyParser.urlencoded({ extended: true }));
 
 server.listen(port, () => {
     console.log(`Server running at port:${port}`);
+    socket.initiateSocketConnection(server);
 });
 
-// express.use(require('express').static('public'))
-express.use(require('express').static(path.join(__dirname, 'public')));
+app.use(require('express').static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
 
-express.get('/', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/views/index.html');
+});
+
+app.post('/createRoom', function (req, res) {
+    console.log(req.body);
+    // console.log(req.body['no-of-rounds']);
+    // var data = JSON.parse('{"result":true, "count":42}');
+    var data = req.body;
+    console.log(data);
+
+    let room = roomManager.createRoom(req.body.noOfRounds, req.body.timeToGuess);
+    let player = playerManager.createPlayer(req.body.playerName, true);
+    room.addPlayerToRoom(player);
+
+    res.send(room);
+    // res.sendFile(__dirname + '/public/views/board.html');
 });
 
 
@@ -31,14 +51,3 @@ app.get('/', function(req, res){
 });
 */
 
-io.on('connection', (socket) => {
-    socket.on('draw', function (data) {
-        console.log(data.type + ' at ' + data.x + ', ' + data.y);
-        socket.broadcast.emit('draw', data);
-    });
-    // socket.emit('news', { hello: 'world' });
-    // socket.on('my other event', (data) => {
-    //   console.log(data);
-    // });
-
-});
