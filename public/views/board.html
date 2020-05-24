@@ -47,7 +47,7 @@
     };
 
     function sendEventToServer(e) {
-        var jsonUserData = JSON.parse(localStorage.room);
+        var jsonUserData = JSON.parse(sessionStorage.room);
         var drawingData = { x : e.clientX, y : e.clientY, type : event.type};
         var userData = {playerName: jsonUserData.playerName, roomName: jsonUserData.roomName};
         var data = {drawingData: drawingData, userData: userData};
@@ -55,8 +55,8 @@
     }
 
     function joinRoom() {
-        if (typeof (localStorage) != "undefined") {
-            socket.emit('join', localStorage.room);
+        if (typeof (sessionStorage) != "undefined") {
+            socket.emit('join', sessionStorage.room);
         }
     }
  

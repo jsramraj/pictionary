@@ -78,8 +78,8 @@
             playerName: $('#player_name').val(),
             roomName: $('#room_name').val(),
         };
-        if (typeof (localStorage) != "undefined") {
-            localStorage.room = JSON.stringify(data);
+        if (typeof (sessionStorage) != "undefined") {
+            sessionStorage.room = JSON.stringify(data);
         }
         window.location = "/board";
     });
@@ -101,8 +101,8 @@
             data: postData,
             success: function (data) {
                 console.log(data);
-                if (typeof (localStorage) != "undefined") {
-                    localStorage.room = JSON.stringify(data);
+                if (typeof (sessionStorage) != "undefined") {
+                    sessionStorage.room = JSON.stringify(data);
                 }
                 var url = "/board";
                 window.location = url;
