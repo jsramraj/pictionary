@@ -32,7 +32,11 @@ app.post('/createRoom', function (req, res) {
     let player = playerManager.createPlayer(req.body.playerName, true);
     room.addPlayerToRoom(player);
 
-    res.send(room);
+    var data = {
+        playerName: req.body.playerName,
+        roomName: room.roomName,
+    };
+    res.send(data);
 });
 
 

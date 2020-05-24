@@ -47,7 +47,11 @@
     };
 
     function sendEventToServer(e) {
-        socket.emit('draw', { x : e.clientX, y : e.clientY, type : event.type})
+        var jsonUserData = JSON.parse(localStorage.room);
+        var drawingData = { x : e.clientX, y : e.clientY, type : event.type};
+        var userData = {playerName: jsonUserData.playerName, roomName: jsonUserData.roomName};
+        var data = {drawingData: drawingData, userData: userData};
+        socket.emit('draw', data);
     }
 
     function joinRoom() {

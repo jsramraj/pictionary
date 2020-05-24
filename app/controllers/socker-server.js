@@ -5,7 +5,7 @@ const initiateSocketConnection = function (server) {
     io.on('connection', (socket) => {
         socket.on('draw', function (data) {
             // console.log(data.type + ' at ' + data.x + ', ' + data.y);
-            socket.broadcast.emit('draw', data);
+            io.sockets.in(data.userData.roomName).emit('draw', data.drawingData);
         });
 
         socket.on('join', function (room) {
@@ -18,8 +18,9 @@ function handleJoin(room, socket) {
     console.log(room);
     let roomJson = JSON.parse(room);
     let roomName = roomJson.roomName;
+    let playerName = roomJson.playerName;
     socket.join(roomName);
-    io.sockets.in(roomName).emit('connectToRoom', "You are in room " + roomName);
+    io.sockets.in(roomName).emit('connectToRoom', playerName + " has joined");
 }
 
 module.exports = { initiateSocketConnection };

@@ -21,4 +21,10 @@ const addPlayerToRoom = function (room, player) {
     room.addPlayerToRoom(player);
 }
 
+const getPlayer = function (roomName, playerName) {
+    var room = rooms.find(room => room.roomName == roomName);
+    var player = room.players.find(player => player.playerName == playerName);
+    return player;
+}
+
 module.exports = { createRoom }

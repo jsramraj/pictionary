@@ -17,8 +17,8 @@
                 <button type="button" class="toggle-btn" onclick="create()">Create</button>
                 <button type="button" class="toggle-btn" onclick="join()">Join</button>
             </div>
-            <form id="createForm" class="input-group">
-                <input type="text" class="input-field" id="player_name" placeholder="Enter player name" required>
+            <form id="create" class="input-group">
+                <input type="text" class="input-field" id="admin_name" placeholder="Enter player name" required>
                 <p class="space_30"></p>
 
                 <div class="input-label">
@@ -48,8 +48,8 @@
                 <button type="submit" class="submit-button">Create</button>
             </form>
             <form id="join" class="input-group">
-                <input type="text" class="input-field" placeholder="Enter player name" required>
-                <input type="text" class="input-field" placeholder="Enter private code" required>
+                <input type="text" id="player_name" class="input-field" placeholder="Enter player name" required>
+                <input type="text" id="room_name" class="input-field" placeholder="Enter private code" required>
                 <button type="submit" class="submit-button">Join</button>
             </form>
         </div>
@@ -72,10 +72,22 @@
         btn.style.left = "0px";
     }
 
-    $('#createForm').submit(function (e) {
+    $('#join').submit(function (e) {
+        e.preventDefault();
+        var data = {
+            playerName: $('#player_name').val(),
+            roomName: $('#room_name').val(),
+        };
+        if (typeof (localStorage) != "undefined") {
+            localStorage.room = JSON.stringify(data);
+        }
+        window.location = "/board";
+    });
+
+    $('#create').submit(function (e) {
         e.preventDefault();
         var postData = {
-            playerName: $('#player_name').val(),
+            playerName: $('#admin_name').val(),
             noOfRounds: $('#no_of_rounds').val(),
             timeToGuess: $('#time_to_guess').val()
         };
