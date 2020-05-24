@@ -98,23 +98,9 @@
                         <?}) ?>`, { players: players },
                         { delimiter: '?' });
                     $('#players').html(html);
-                    console.log(html);
                 }
             });
         }
-
-        /*
-        let html = ejs.render(`<table >
-                <%players.map( player => {%>
-                <tr >
-                    <div ><%= player %></div>
-                    </td>
-                </tr>
-                <%})%>
-            </table>`, { players: people });
-            */
-        // With jQuery:
-        // $('#players').html("html");
     }
 
     function draw(x, y, event) {

@@ -45,6 +45,16 @@ app.post('/createRoom', function (req, res) {
     res.send(data);
 });
 
+app.post('/joinRoom', function (req, res) {
+    console.log(req.body);
+    let player = playerManager.createPlayer(req.body.playerName, false);
+    let status = roomManager.addPlayerToRoom(req.body.roomName, player);
+    console.log(status);
+    let data = {status : status};
+    res.status(status);
+    res.send(JSON.stringify(data));
+});
+
 app.get('/getPlayers', function (req, res) {
     var roomName = req.query.roomName;
     let players = roomManager.getPlayers(roomName);

@@ -73,15 +73,29 @@
     }
 
     $('#join').submit(function (e) {
+        console.log('join');
         e.preventDefault();
-        var data = {
+        var postData = {
             playerName: $('#player_name').val(),
             roomName: $('#room_name').val(),
         };
         if (typeof (sessionStorage) != "undefined") {
-            sessionStorage.room = JSON.stringify(data);
+            sessionStorage.room = JSON.stringify(postData);
         }
-        window.location = "/board";
+        $.ajax({
+            url: "/joinRoom",
+            type: "POST",
+            dataType: "json",
+            data: postData,
+            success: function (data) {
+                console.log(data);
+                var url = "/board";
+                window.location = url;
+            },
+            fail: function (xhr, textStatus, errorThrown) {
+                console.log('failed');
+            }
+        });
     });
 
     $('#create').submit(function (e) {

@@ -17,8 +17,14 @@ const createRoom = function (noOfRounds, timeToGuess) {
     return room;
 }
 
-const addPlayerToRoom = function (room, player) {
-    room.addPlayerToRoom(player);
+const addPlayerToRoom = function (roomName, player) {
+    var room = rooms.find(room => room.roomName == roomName);
+    if (typeof (room) != "undefined") {
+        room.addPlayerToRoom(player);
+        return 200;
+    }
+    //no room found with that name
+    return 404;
 }
 
 const getPlayer = function (roomName, playerName) {
@@ -35,4 +41,4 @@ const getPlayers = function (roomName) {
     return [];
 }
 
-module.exports = { createRoom, getPlayers }
+module.exports = { createRoom, addPlayerToRoom, getPlayers }
