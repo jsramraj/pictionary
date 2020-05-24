@@ -1,8 +1,12 @@
 const app = require('express')();
 const server = require('http').Server(app);
+let ejs = require('ejs');
 
 const path = require('path');
 var bodyParser = require('body-parser');
+var url = require('url');
+
+const Player = require('./app/models/player')
 
 const { port } = require('./config');
 let socket = require('./app/controllers/socker-server')
@@ -17,6 +21,7 @@ server.listen(port, () => {
 });
 
 app.use(require('express').static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
@@ -24,7 +29,8 @@ app.get('/', (req, res) => {
 });
 
 app.get('/board', (req, res) => {
-    res.sendFile(__dirname + '/public/views/board.html');
+    // res.sendFile(__dirname + '/public/views/board.html');
+    res.render('board', { url: '/', players: [] });
 });
 
 app.post('/createRoom', function (req, res) {
@@ -39,12 +45,18 @@ app.post('/createRoom', function (req, res) {
     res.send(data);
 });
 
+app.get('/getPlayers', function (req, res) {
+    var roomName = req.query.roomName;
+    let players = roomManager.getPlayers(roomName);
+    res.send(JSON.stringify(players));
+});
+
 
 /*
 const app = express();
 app.use(express.static('public'))
 app.listen(port, () => {
-    console.log(`listening on port ${port}`)   
+    console.log(`listening on port ${port}`)
 });
 
 app.get('/', function(req, res){

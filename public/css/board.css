@@ -1,0 +1,47 @@
+.player-column {
+    float: left;
+    width: 200px;
+    padding: 10px 0;
+}
+
+.canvas-column {
+    float: left;
+    width: 400px;
+    padding: 10px 0;
+}
+
+.chat-column {
+    float: left;
+    width: 100px;
+    padding: 10px;
+}
+
+#players {
+    width: 100%;
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+}
+
+#players td, #players th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#players tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#players tr:hover {
+    background-color: #ddd;
+}
+
+#players th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}

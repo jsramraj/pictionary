@@ -1,0 +1,151 @@
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="../css/board.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="../js/ejs.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<body>
+    <div class="row">
+        <div class="player-column">
+            <table id="players">
+                <%players.map( player => {%>
+                <tr>
+                    <td><%= player.playerName %></td>
+                </tr>
+                <%})%>
+            </table>
+        </div>
+        <div class="canvas-column">
+            <canvas id="myCanvas" width="400" height="400" style="border:1px solid #d3d3d3;">
+        </div>
+        <div class="chat-column"></div>
+    </div>
+</body>
+<script>
+    const socket = io.connect('http://localhost:3300');
+    $(document).ready(function () {
+        init();
+        joinRoom();
+        getPlayers();
+    });
+
+    var ctx;
+    var $canvas;
+    function init() {
+        $canvas = $("#myCanvas");
+        ctx = $canvas[0].getContext('2d');
+
+        var canvasOffset = $canvas.offset();
+        var leftOffset = canvasOffset.left;
+        var topOffset = canvasOffset.top;
+
+        console.log($("#myCanvas"));
+        var drag = false;
+        $canvas.on('mousemove', function (e) {
+            if (drag) {
+                draw(e.clientX, e.clientY, e);
+                sendEventToServer(e);
+            }
+        });
+
+        $canvas.on('mousedown', function (e) {
+            sendEventToServer(e);
+            drag = true;
+            draw(e.clientX, e.clientY, e);
+        });
+
+        $canvas.on('mouseup', function (e) {
+            sendEventToServer(e);
+            drag = false;
+            draw(e.clientX, e.clientY, e);
+        });
+    };
+
+    function sendEventToServer(e) {
+        var jsonUserData = JSON.parse(sessionStorage.room);
+        var drawingData = { x: e.clientX, y: e.clientY, type: event.type };
+        var userData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
+        var data = { drawingData: drawingData, userData: userData };
+        socket.emit('draw', data);
+    }
+
+    function joinRoom() {
+        if (typeof (sessionStorage) != "undefined") {
+            socket.emit('join', sessionStorage.room);
+        }
+    }
+
+    function getPlayers() {
+        var people = ['geddy', 'neil', 'alex'];
+        if (typeof (sessionStorage) != "undefined") {
+            var jsonUserData = JSON.parse(sessionStorage.room);
+            let roomName = jsonUserData.roomName;
+            $.ajax({
+                url: "/getPlayers",
+                type: "GET",
+                data: { roomName: roomName },
+                success: function (data) {
+                    let players = JSON.parse(data);
+                    let html = ejs.render(`
+                        <? players.forEach(player => {?>
+                        <tr>
+                            <td><?= player.playerName ?></td>
+                        </tr>
+                        <?}) ?>`, { players: players },
+                        { delimiter: '?' });
+                    $('#players').html(html);
+                    console.log(html);
+                }
+            });
+        }
+
+        /*
+        let html = ejs.render(`<table >
+                <%players.map( player => {%>
+                <tr >
+                    <div ><%= player %></div>
+                    </td>
+                </tr>
+                <%})%>
+            </table>`, { players: people });
+            */
+        // With jQuery:
+        // $('#players').html("html");
+    }
+
+    function draw(x, y, event) {
+        var canvasOffset = $canvas.offset();
+        var leftOffset = canvasOffset.left;
+        var topOffset = canvasOffset.top;
+        x = x - leftOffset;
+        y = y - topOffset;
+
+        if (event.type == "mousedown") {
+            ctx.beginPath()
+            ctx.moveTo(x, y)
+        }
+        else if (event.type == "mousemove") {
+            ctx.lineTo(x, y)
+            ctx.stroke()
+        }
+        else if (event.type == "mouseup") {
+            ctx.closePath()
+        }
+    };
+
+    socket.on('draw', (event) => {
+        var eventJSOn = JSON.stringify(event);
+        draw(event.x, event.y, event);
+    });
+
+    socket.on('connectToRoom', (event) => {
+        console.log(event);
+        getPlayers();
+    });
+</script>
+
+</html>

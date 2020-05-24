@@ -27,4 +27,12 @@ const getPlayer = function (roomName, playerName) {
     return player;
 }
 
-module.exports = { createRoom }
+const getPlayers = function (roomName) {
+    var room = rooms.find(room => room.roomName == roomName);
+    if (typeof (room) != "undefined") {
+        return room.players;
+    }
+    return [];
+}
+
+module.exports = { createRoom, getPlayers }
