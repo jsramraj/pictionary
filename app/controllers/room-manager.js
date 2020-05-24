@@ -27,10 +27,32 @@ const addPlayerToRoom = function (roomName, player) {
     return 404;
 }
 
+const removePlayerFromRoom = function (roomName, playerName) {
+    var room = rooms.find(room => room.roomName == roomName);
+    var player = room.players.find(player => player.playerName == playerName);
+    if (typeof (player) != "undefined") {
+        const index = room.players.indexOf(player);
+        if (index > -1) {
+            room.players.splice(index, 1);
+        }
+    }
+}
+
 const getPlayer = function (roomName, playerName) {
     var room = rooms.find(room => room.roomName == roomName);
     var player = room.players.find(player => player.playerName == playerName);
     return player;
+}
+
+const getPlayerForSocket = function (socketId) {
+    let playerData;
+    rooms.forEach(room => {
+        var player = room.players.find(player => player.sockerId == socketId);
+        if (typeof (player) != "undefined") {
+            playerData = { playerName: player.playerName, roomName: room.roomName };
+        }
+    })
+    return playerData;
 }
 
 const getPlayers = function (roomName) {
@@ -41,4 +63,11 @@ const getPlayers = function (roomName) {
     return [];
 }
 
-module.exports = { createRoom, addPlayerToRoom, getPlayer, getPlayers }
+const setSocketId = function (roomName, playerName, socketId) {
+    let player = getPlayer(roomName, playerName);
+    if (typeof (player) != "undefined") {
+        player.sockerId = socketId;
+    }
+}
+
+module.exports = { createRoom, addPlayerToRoom, removePlayerFromRoom, getPlayer, getPlayerForSocket, getPlayers, setSocketId }
