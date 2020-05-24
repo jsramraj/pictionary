@@ -23,19 +23,16 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/views/index.html');
 });
 
-app.post('/createRoom', function (req, res) {
-    console.log(req.body);
-    // console.log(req.body['no-of-rounds']);
-    // var data = JSON.parse('{"result":true, "count":42}');
-    var data = req.body;
-    console.log(data);
+app.get('/board', (req, res) => {
+    res.sendFile(__dirname + '/public/views/board.html');
+});
 
+app.post('/createRoom', function (req, res) {
     let room = roomManager.createRoom(req.body.noOfRounds, req.body.timeToGuess);
     let player = playerManager.createPlayer(req.body.playerName, true);
     room.addPlayerToRoom(player);
 
     res.send(room);
-    // res.sendFile(__dirname + '/public/views/board.html');
 });
 
 

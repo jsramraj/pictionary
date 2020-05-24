@@ -12,6 +12,7 @@
     const socket = io.connect('http://localhost:3300');
     $(document).ready(function () {
         init();
+        joinRoom();
     });
 
     var ctx;
@@ -49,6 +50,12 @@
         socket.emit('draw', { x : e.clientX, y : e.clientY, type : event.type})
     }
 
+    function joinRoom() {
+        if (typeof (localStorage) != "undefined") {
+            socket.emit('join', localStorage.room);
+        }
+    }
+ 
     function draw(x, y, event) {
         if (event.type == "mousedown") {
             ctx.beginPath()
@@ -65,12 +72,11 @@
 
     socket.on('draw', (event) => {
         var eventJSOn = JSON.stringify(event);
-        // console.log('draw ' + eventJSOn );
-        // console.log('x ' + event.x );
-        // console.log('y ' + event.y );
-        // console.log('t ' + event.type );
-        // var event = data;
         draw(event.x, event.y, event);
+    });
+
+    socket.on('connectToRoom', (event) => {
+        console.log(event);
     });
 </script>
 

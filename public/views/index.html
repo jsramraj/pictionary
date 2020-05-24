@@ -90,8 +90,10 @@
             success: function (data) {
                 console.log(data);
                 if (typeof (localStorage) != "undefined") {
-                    localStorage.room = data;
+                    localStorage.room = JSON.stringify(data);
                 }
+                var url = "/board";
+                window.location = url;
             }
         });
     });
