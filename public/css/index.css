@@ -37,7 +37,7 @@
     border: 0;
     outline: none;
     position: relative;
-    font-family: fantasy;
+    font-family: "Comic Sans MS", cursive, sans-serif;
     font-size: medium;
 }
 
@@ -70,7 +70,7 @@
     border-bottom: 1px solid #999;
     outline: none;
     background: transparent;
-    font-family: fantasy;
+    font-family: "Comic Sans MS", cursive, sans-serif;
     font-size: small;
 }
 
@@ -78,7 +78,7 @@
     margin: 10px 0px;
     text-align: left;
     font-size: small;
-    font-family: fantasy;
+    font-family: "Comic Sans MS", cursive, sans-serif;
     color: gray;
 }
 
@@ -93,7 +93,7 @@
     outline: none;
     border-radius: 30px;
     margin-top: 10px;
-    font-family: fantasy;
+    font-family: "Comic Sans MS", cursive, sans-serif;
     font-size: medium;
 }
 

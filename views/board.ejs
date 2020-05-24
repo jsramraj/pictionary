@@ -10,24 +10,30 @@
 
 <body>
     <div class="background">
-        <div class="player-column">
-            <table id="players">
-                <%players.map( player => {%>
-                <tr>
-                    <td><%= player.playerName %></td>
-                </tr>
-                <%})%>
-            </table>
+        <div class="palette-column">
         </div>
         <div class="canvas-column">
             <canvas id="myCanvas" width="600px" height="600px" class="canvas"">
         </div>
-        <div class=" chat-column">
-                <ul class="messages" id="messages"></ul>
-                <form id="message-form" class="message-form" action="">
-                    <input class="message-form-input" id="m" autocomplete="off" />
-                    <button class="message-form-button">Send</button>
-                </form>
+        <div class=" player-column">
+                <div class="player-section">
+                    <table id="players">
+                        <%players.map( player => {%>
+                        <tr>
+                            <td><%= player.playerName %></td>
+                        </tr>
+                        <%})%>
+                    </table>
+                </div>
+                <div class="chat-section">
+                    <ul class="messages" id="messages"></ul>
+                    <div class="message-section">
+                        <form id="message-form" class="message-form" action="">
+                            <input class="message-form-input" placeholder="Type your guess here!" id="m" autocomplete="off" />
+                            <button class="message-form-button">Send</button>
+                        </form>
+                    </div>
+                </div>
         </div>
     </div>
 </body>
@@ -99,7 +105,6 @@
     }
 
     function getPlayers() {
-        var people = ['geddy', 'neil', 'alex'];
         if (typeof (sessionStorage) != "undefined") {
             var jsonUserData = JSON.parse(sessionStorage.room);
             let roomName = jsonUserData.roomName;
@@ -147,8 +152,14 @@
         draw(event.x, event.y, event);
     });
 
-    socket.on('connectToRoom', (event) => {
-        console.log(event);
+    socket.on('connectToRoom', (message) => {
+        console.log(message);
+        getPlayers();
+    });
+
+    socket.on('event', (message) => {
+        console.log(message);
+        $('#messages').append($('<li>').text(message));
         getPlayers();
     });
 
