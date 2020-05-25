@@ -14,8 +14,21 @@
         <div class="palette-column">
         </div>
         <div class="canvas-column">
-            <div id="overlay">
+            <div id="overlay" class="overlay">
                 <button id="play-button" class="button">Play</button>
+            </div>
+            <div id="round-scoreboard" class="score-board-overlay" style="display: none;">
+                <div class="score-board-content">
+                    <div class="score-title">
+                        <p class="round-info">Scoreboard</p>
+                    </div>
+                    <div class="score-table">
+                        <table class="list score" id="round-scoreboard-table">
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="game-scoreboard" class="overlay" style="display: none;">
             </div>
             <div class="status-bar">
                 <p class="round-info" id="round-info">Round n of n</p>
@@ -27,7 +40,7 @@
         </div>
         <div class = " player-column">
                     <div class="player-section">
-                        <table id="players">
+                        <table class="list" id="players">
                             <%players.map( player => {%>
                             <tr>
                                 <td><%= player.playerName %></td>
@@ -60,7 +73,7 @@
     $('#play-button').click(function () {
         console.log('button click');
         $('#overlay').css("display", "none");
-        createRound();
+        startGame();
     });
 
     $('#message-form').submit(function (e) {
@@ -81,6 +94,11 @@
     function init() {
         if (typeof (sessionStorage) != "undefined") {
             roomData = JSON.parse(sessionStorage.room);
+            if (roomData.isAdmin === true) {
+                $('#overlay').css("display", "block");
+            } else {
+                $('#overlay').css("display", "none");
+            }
         }
 
         $canvas = $("#myCanvas");
@@ -149,7 +167,7 @@
         }
     }
 
-    function createRound() {
+    function startGame() {
         socket.emit('play', roomData.roomName);
     }
 
@@ -197,6 +215,41 @@
         clearInterval(timerInterval);
     }
 
+    function updateRoundInfo(round) {
+        console.log(round);
+        let html = ejs.render(`
+                        Round <?= roundNo ?> of <?= noOfRounds ?>`,
+            { roundNo: round.roundNo, noOfRounds: round.noOfRounds },
+            { delimiter: '?' });
+        console.log(html);
+        $('#round-info').html(html);
+    }
+
+    function displayRoundScoreboard(round) {
+        console.log(round);
+        let scores = round.scores;
+        let html = ejs.render(`
+                    <colgroup>
+                            <col span="1" style="width: 75%;">
+                            <col span="1" style="width: 25%;">
+                    </colgroup>                    
+                    <? for (var playerName in scores) {?>
+                    <tr>
+                        <td><?= playerName ?></td>
+                        <td><?= scores[playerName] ?></td>
+                    </tr>
+                    <?} ?>`,
+            { scores: scores },
+            { delimiter: '?' });
+            console.log(html);
+        $('#round-scoreboard-table').html(html);
+        $('#round-scoreboard').css("display", "block");
+    }
+
+    function hideRoundScoreboard() {
+        $('#round-scoreboard').css("display", "none");
+    }
+
     socket.on('draw', (event) => {
         var eventJSOn = JSON.stringify(event);
         draw(event.x, event.y, event);
@@ -216,18 +269,13 @@
     socket.on('roundStart', (round) => {
         var display = document.querySelector('#timer');
         startTimer(round.timeToGuess, display);
-
-        console.log(round);
-        let html = ejs.render(`
-                        Round <?= roundNo ?> of <?= noOfRounds ?>`,
-            { roundNo: round.roundNo, noOfRounds: round.noOfRounds },
-            { delimiter: '?' });
-            console.log(html);
-        $('#round-info').html(html);
+        updateRoundInfo(round);
+        hideRoundScoreboard();
     });
 
     socket.on('roundEnd', (round) => {
         stopTimer();
+        displayRoundScoreboard(round);
     });
 
     socket.on('message', (messageData) => {

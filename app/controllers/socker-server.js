@@ -98,7 +98,8 @@ function onRoundEnded(game, round, roomName) {
     io.sockets.in(roomName).emit('roundEnd', {
         roundNo: round.roundNo,
         noOfRounds: game.noOfRounds,
-        timeToGuess: round.timeToGuess
+        timeToGuess: round.timeToGuess,
+        scores: round.scores
     });
 }
 

@@ -40,6 +40,7 @@ app.post('/createRoom', function (req, res) {
 
     var data = {
         playerName: req.body.playerName,
+        isAdmin: true,
         roomName: room.roomName,
     };
     res.send(data);
@@ -50,7 +51,7 @@ app.post('/joinRoom', function (req, res) {
     let player = playerManager.createPlayer(req.body.playerName, false);
     let status = roomManager.addPlayerToRoom(req.body.roomName, player);
     console.log(status);
-    let data = {status : status};
+    let data = { status: status };
     res.status(status);
     res.send(JSON.stringify(data));
 });
