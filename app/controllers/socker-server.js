@@ -57,7 +57,6 @@ function onMessage(messageData) {
         player: player,
         message: messageData.message
     }
-    console.log(data);
     let guessed = gameManager.validateGuess(messageData.message, playerData.roomName);
     if (guessed === true) {
         let room = roomManager.getRoom(playerData.roomName);
