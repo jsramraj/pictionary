@@ -2,12 +2,11 @@ var Room = require('../models/room')
 const Player = require('../models/player')
 const GameManager = require('./game-manager')
 
-var roomNo = 1;
 var rooms = [];
 
 const getRoomName = function () {
-    roomNo++;
-    return 'room' + roomNo;
+    //generate a 6 letter random string for room name
+    return Array(6).fill(0).map(x => Math.random().toString(36).charAt(2)).join('');
 }
 
 const createRoom = function (noOfRounds, timeToGuess) {

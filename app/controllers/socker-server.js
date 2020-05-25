@@ -1,5 +1,6 @@
 let roomManager = require('./room-manager')
 let gameManager = require('./game-manager')
+let scoreCard = require('./scorecard')
 
 let io;
 const initiateSocketConnection = function (server) {
@@ -96,19 +97,21 @@ function onRoundEnded(game, round, roomName) {
     console.log('Round ' + round.roundNo + ' has ended for room: ' + roomName);
     let scores = {};
     let room = roomManager.getRoom(roomName);
+
     room.players.forEach(player => {
         var score = round.scores[player.playerName];
         if (typeof (score) == "undefined") {
             score = 0;
         }
         scores[player.playerName] = score;
+        console.log('current round score for ' + player.playerName + ': ' + scores[player.playerName]);
     });
 
     io.sockets.in(roomName).emit('roundEnd', {
         roundNo: round.roundNo,
         noOfRounds: game.noOfRounds,
         timeToGuess: round.timeToGuess,
-        scores: scores
+        scores: scores,
     });
 }
 

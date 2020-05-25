@@ -176,7 +176,7 @@
                             <? } else {?>
                                 <td style="width:0%"></td>                        
                                 <? } ?>
-                            <td style="width:95%"><?= player.playerName ?></td>
+                            <td style="width:95%"><?= player.playerName ?> (Points: <?= player.score ?>)</td>
                         </tr>
                         <?}) ?>`, { players: players },
                         { delimiter: '?' });

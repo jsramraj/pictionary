@@ -67,6 +67,18 @@ const setAsActivePlayer = function (roomName, index) {
     });
 }
 
+const updateFullScore = function (roomName, score) {
+    let currentPlayers = players[roomName];
+    currentPlayers.forEach((player, _index) => {
+        var sumScore = score[player.playerName];
+        if (typeof (sumScore) == "undefined") {
+            sumScore = 0;
+        }
+        player.score = sumScore;
+        console.log('overall round score for ' + player.playerName + ': ' + player.score);
+    });
+}
+
 var guessTimer;
 var timerToNextRound;
 const startRound = function (round, roomName) {
@@ -84,8 +96,9 @@ const startTurn = function (roomName) {
         setAsActivePlayer(roomName, indexOfActivePlayer + 1);
         let nextRound = createRound(roomName, false);
         if (typeof (nextRound) == "undefined") {
-            let game = getGame(roomName);
-            gameEndCallback(game, roomName);
+            // let game = getGame(roomName);
+            let score = ScoreCard.getScoreCard(roomName);
+            gameEndCallback(score, roomName);
         } else {
             startRound(round, roomName);
         }
@@ -105,8 +118,8 @@ const endTurn = function (roomName) {
     clearInterval(guessTimer);
 
     let round = roundData[roomName];
-    roundEndCallback(getGame(roomName), round, roomName);
     saveScore(roomName);
+    roundEndCallback(getGame(roomName), round, roomName);
 
     timerToNextRound = setTimeout(startTurn, 5 * 1000, roomName);
 }
@@ -136,6 +149,8 @@ const saveScore = function (roomName) {
         console.log(playerName + ': ' + score);
     }
     ScoreCard.updateScoreCard(round, roomName);
+    let overAllScoresData = ScoreCard.sumOfScore(roomName);
+    updateFullScore(roomName, overAllScoresData);
 }
 
 module.exports = { setCallbacks, createGame, startGame, getGame, createRound, validateGuess, updateScore, saveScore, setPlayers, setAsActivePlayer }
