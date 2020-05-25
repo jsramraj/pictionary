@@ -1,5 +1,5 @@
 class Game {
-    currentRound = 1;
+    currentRound = 0;
     constructor(noOfRounds, timeToGuess) {
         this.noOfRounds = noOfRounds;
         this.timeToGuess = timeToGuess;

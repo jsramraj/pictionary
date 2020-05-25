@@ -2,9 +2,10 @@
 
 class Round {
     scores = {};
-    constructor(roundNo, word) {
+    constructor(roundNo, timeToGuess, word) {
         this.word = word;
         this.roundNo = roundNo;
+        this.timeToGuess = timeToGuess;
     }
 }
 

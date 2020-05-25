@@ -2,6 +2,7 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="../css/board.css">
+    <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet'>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="../js/ejs.min.js"></script>
@@ -17,6 +18,8 @@
                 <button id="play-button" class="button">Play</button>
             </div>
             <div class="status-bar">
+                <p class="round-info" id="round-info">Round n of n</p>
+                <p class="timer" id="timer">00:00</p>
             </div>
             <div>
                 <canvas id="myCanvas" width="600px" height="550px" class="canvas"">
@@ -147,7 +150,7 @@
     }
 
     function createRound() {
-        socket.emit('createRound', roomData.roomName);
+        socket.emit('play', roomData.roomName);
     }
 
     function draw(x, y, event) {
@@ -170,6 +173,30 @@
         }
     };
 
+    var timerInterval;
+    function startTimer(duration, display) {
+        var timer = duration, minutes, seconds;
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                timer = duration;
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        var display = document.querySelector('#timer');
+        display.textContent = "00:00";
+        clearInterval(timerInterval);
+    }
+
     socket.on('draw', (event) => {
         var eventJSOn = JSON.stringify(event);
         draw(event.x, event.y, event);
@@ -184,6 +211,23 @@
         console.log(message);
         $('#messages').append($('<li>').text(message));
         getPlayers();
+    });
+
+    socket.on('roundStart', (round) => {
+        var display = document.querySelector('#timer');
+        startTimer(round.timeToGuess, display);
+
+        console.log(round);
+        let html = ejs.render(`
+                        Round <?= roundNo ?> of <?= noOfRounds ?>`,
+            { roundNo: round.roundNo, noOfRounds: round.noOfRounds },
+            { delimiter: '?' });
+            console.log(html);
+        $('#round-info').html(html);
+    });
+
+    socket.on('roundEnd', (round) => {
+        stopTimer();
     });
 
     socket.on('message', (messageData) => {

@@ -48,12 +48,6 @@
     border: 1px solid #000;
 }
 
-.status-bar {
-    height: 50px;
-    background: red;
-    margin-bottom: 10px;
-}
-
 #players {
     width: 100%;
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -157,4 +151,29 @@
     font-size: 50px;
     cursor: pointer;
     background: linear-gradient(to right, #ff105f, #ffad06);
+}
+
+.status-bar {
+    margin: auto;
+    height: 35px;
+    background: linear-gradient(to right, #ff105f, #ffad06);
+    padding: 0px 10px 15px 10px;
+    margin-bottom: 10px;
+}
+
+.round-info {
+    float: left;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    color: white;
+}
+
+@font-face {
+    font-family: Timer;
+    src: url('../assets/fonts/digital-7.regular.ttf');
+}
+
+.timer {
+    float: right;
+    font-family: 'Timer';
+    font-size: 22px;
 }

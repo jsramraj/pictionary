@@ -3,6 +3,9 @@ let gameManager = require('./game-manager')
 
 let io;
 const initiateSocketConnection = function (server) {
+
+    gameManager.setCallbacks(onGameStarted, onGameEnded, onRoundStarted, onRoundEnded);
+
     io = require('socket.io')(server);
     io.on('connection', (socket) => {
         socket.on('draw', function (data) {
@@ -21,9 +24,10 @@ const initiateSocketConnection = function (server) {
             onMessage(data);
         });
 
-        socket.on('createRound', function (roomName) {
+        socket.on('play', function (roomName) {
             console.log('creating round for room ' + roomName);
-            gameManager.createRound(roomName);
+            let round = gameManager.startGame(roomName);
+            let game = gameManager.getGame(roomName);
         });
 
         socket.on('disconnect', () => {
@@ -67,6 +71,35 @@ function onMessage(messageData) {
         io.sockets.in(playerData.roomName).emit('message', JSON.stringify(data));
         console.log(playerData.playerName + ': ' + messageData.message);
     }
+}
+
+
+function onGameStarted(game, roomName) {
+    console.log('Game started for room: ' + roomName);
+    io.sockets.in(roomName).emit('gameStart', {});
+}
+
+function onGameEnded(game, roomName) {
+    console.log('Game ended for room: ' + roomName);
+    io.sockets.in(roomName).emit('gameEnd', {});
+}
+
+function onRoundStarted(game, round, roomName) {
+    console.log('Round ' + round.roundNo + ' has started for room: ' + roomName);
+    io.sockets.in(roomName).emit('roundStart', {
+        roundNo: round.roundNo,
+        noOfRounds: game.noOfRounds,
+        timeToGuess: round.timeToGuess
+    });
+}
+
+function onRoundEnded(game, round, roomName) {
+    console.log('Round ' + round.roundNo + ' has ended for room: ' + roomName);
+    io.sockets.in(roomName).emit('roundEnd', {
+        roundNo: round.roundNo,
+        noOfRounds: game.noOfRounds,
+        timeToGuess: round.timeToGuess
+    });
 }
 
 module.exports = { initiateSocketConnection };
