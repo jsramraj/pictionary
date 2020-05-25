@@ -94,11 +94,21 @@ function onRoundStarted(game, round, roomName) {
 
 function onRoundEnded(game, round, roomName) {
     console.log('Round ' + round.roundNo + ' has ended for room: ' + roomName);
+    let scores = {};
+    let room = roomManager.getRoom(roomName);
+    room.players.forEach(player => {
+        var score = round.scores[player.playerName];
+        if (typeof (score) == "undefined") {
+            score = 0;
+        }
+        scores[player.playerName] = score;
+    });
+
     io.sockets.in(roomName).emit('roundEnd', {
         roundNo: round.roundNo,
         noOfRounds: game.noOfRounds,
         timeToGuess: round.timeToGuess,
-        scores: round.scores
+        scores: scores
     });
 }
 

@@ -5,6 +5,7 @@
     <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet'>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="../js/ejs.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -47,7 +48,10 @@
         </div>
         <div class=" player-column">
             <div class="player-section">
-                <table class="list" id="players">
+                <div id="room-name-div">
+                    <p id="room-name" class="round-info">Room: test</p>
+                </div>
+                <table class="list players" id="players">
                     <%players.map( player => {%>
                     <tr>
                         <td><%= player.playerName %></td>
@@ -57,16 +61,16 @@
             </div>
             <div class="chat-section">
                 <div class="messages-section" id="messages-section">
-                <table class="messages" id="messages">                   
-                </table>
-                <div class="message-section">
-                    <form id="message-form" class="message-form" action="">
-                        <input class="message-form-input" placeholder="Type your guess here!" id="m"
-                            autocomplete="off" />
-                        <button class="message-form-button">Send</button>
-                    </form>
+                    <table class="messages" id="messages">
+                    </table>
+                    <div class="message-section">
+                        <form id="message-form" class="message-form" action="">
+                            <input class="message-form-input" placeholder="Type your guess here!" id="m"
+                                autocomplete="off" />
+                            <button class="message-form-button">Send</button>
+                        </form>
+                    </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
@@ -167,7 +171,12 @@
                     let html = ejs.render(`
                         <? players.forEach(player => {?>
                         <tr>
-                            <td><?= player.playerName ?></td>
+                            <? if (player.active === true) { ?>
+                                <td style="width:5%"><i class="fa fa-pencil"></i></td>                        
+                            <? } else {?>
+                                <td style="width:0%"></td>                        
+                                <? } ?>
+                            <td style="width:95%"><?= player.playerName ?></td>
                         </tr>
                         <?}) ?>`, { players: players },
                         { delimiter: '?' });
@@ -275,6 +284,7 @@
 
     socket.on('connectToRoom', (message) => {
         console.log(message);
+        $('#room-name').text('Room: ' + roomData.roomName);
         getPlayers();
     });
 
@@ -282,7 +292,7 @@
         console.log(message);
 
         let markup = '<tr><td>' + message + '</td></tr>';
-        $('#messages').append(markup) 
+        $('#messages').append(markup)
         document.getElementById('messages-section').scrollTop = 10000;
 
         getPlayers();
@@ -293,6 +303,7 @@
         startTimer(round.round.timeToGuess, display);
         updateRoundInfo(round.round);
         hideRoundScoreboard();
+        getPlayers();
     });
 
     socket.on('roundEnd', (round) => {
@@ -304,8 +315,10 @@
         console.log(messageData);
         let messageJson = JSON.parse(messageData);
 
-        let markup = '<tr><td>' + messageJson.message + '</td></tr>';
-        $('#messages').append(markup) 
+        let markup = '<tr><td>' +
+            messageJson.player.playerName + ": " + messageJson.message +
+            '</td></tr>';
+        $('#messages').append(markup)
         document.getElementById('messages-section').scrollTop = 10000;
     });
 </script>

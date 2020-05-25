@@ -27,7 +27,6 @@
 }
 
 .player-column {
-    background: white;
     float: left;
     width: 300px;
     height: 600px;
@@ -39,6 +38,8 @@
     width: 100%;
     height: 50%;
     border: 1px solid #000;
+    margin-bottom: 5px;
+    background: white;
 }
 
 .chat-section {
@@ -47,6 +48,7 @@
     height: 50%;
     position: relative;
     border: 1px solid #000;
+    background: white;
 }
 
 .messages-section {
@@ -66,7 +68,7 @@
 }
 
 .list td, .list th {
-    border: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
     padding: 8px;
 }
 
@@ -167,7 +169,18 @@
     background: linear-gradient(to right, #ff105f, #ffad06);
     padding: 0px 10px 15px 10px;
     margin-bottom: 10px;
-    width: 100%;
+    width: 95%;
+}
+
+#room-name-div {
+    margin: auto;
+    height: 35px;
+    background: linear-gradient(to right, #ff105f, #ffad06);
+}
+
+#room-name {
+    margin: auto;
+    padding: 5px;
 }
 
 .round-info {
