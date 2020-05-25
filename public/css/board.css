@@ -15,8 +15,12 @@
 
 .palette-column {
     float: left;
-    width: 100px;
-    padding: 10px 0;
+    width: 50px;
+    height: 500px;
+    padding: 10px;
+    margin-top: 75px;
+    margin-left: 10px;
+    background: white;
 }
 
 .canvas-column {
@@ -257,3 +261,18 @@
     position: relative;
     display: inline-block;
 }
+
+.colorPickSelector {
+    border-radius: 5px;
+    width: 36px;
+    height: 36px;
+    padding: 7px;
+    cursor: pointer;
+    -webkit-transition: all linear .2s;
+    -moz-transition: all linear .2s;
+    -ms-transition: all linear .2s;
+    -o-transition: all linear .2s;
+    transition: all linear .2s;
+  }
+  
+  .colorPickSelector:hover { transform: scale(1.1); }
