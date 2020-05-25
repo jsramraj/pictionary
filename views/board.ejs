@@ -13,36 +13,51 @@
         <div class="palette-column">
         </div>
         <div class="canvas-column">
-            <canvas id="myCanvas" width="600px" height="600px" class="canvas"">
+            <div id="overlay">
+                <button id="play-button" class="button">Play</button>
+            </div>
+            <div class="status-bar">
+            </div>
+            <div>
+                <canvas id="myCanvas" width="600px" height="550px" class="canvas"">
+            </div>
         </div>
-        <div class=" player-column">
-                <div class="player-section">
-                    <table id="players">
-                        <%players.map( player => {%>
-                        <tr>
-                            <td><%= player.playerName %></td>
-                        </tr>
-                        <%})%>
-                    </table>
-                </div>
-                <div class="chat-section">
-                    <ul class="messages" id="messages"></ul>
-                    <div class="message-section">
-                        <form id="message-form" class="message-form" action="">
-                            <input class="message-form-input" placeholder="Type your guess here!" id="m" autocomplete="off" />
-                            <button class="message-form-button">Send</button>
-                        </form>
+        <div class = " player-column">
+                    <div class="player-section">
+                        <table id="players">
+                            <%players.map( player => {%>
+                            <tr>
+                                <td><%= player.playerName %></td>
+                            </tr>
+                            <%})%>
+                        </table>
                     </div>
-                </div>
+                    <div class="chat-section">
+                        <ul class="messages" id="messages"></ul>
+                        <div class="message-section">
+                            <form id="message-form" class="message-form" action="">
+                                <input class="message-form-input" placeholder="Type your guess here!" id="m"
+                                    autocomplete="off" />
+                                <button class="message-form-button">Send</button>
+                            </form>
+                        </div>
+                    </div>
+            </div>
         </div>
-    </div>
 </body>
 <script>
     const socket = io.connect('http://localhost:3300');
+    let roomData;
     $(document).ready(function () {
         init();
         joinRoom();
         getPlayers();
+    });
+
+    $('#play-button').click(function () {
+        console.log('button click');
+        $('#overlay').css("display", "none");
+        createRound();
     });
 
     $('#message-form').submit(function (e) {
@@ -61,6 +76,10 @@
     var ctx;
     var $canvas;
     function init() {
+        if (typeof (sessionStorage) != "undefined") {
+            roomData = JSON.parse(sessionStorage.room);
+        }
+
         $canvas = $("#myCanvas");
         ctx = $canvas[0].getContext('2d');
 
@@ -125,6 +144,10 @@
                 }
             });
         }
+    }
+
+    function createRound() {
+        socket.emit('createRound', roomData.roomName);
     }
 
     function draw(x, y, event) {

@@ -1,23 +1,73 @@
 <html>
 
 <head>
+    <link rel="stylesheet" type="text/css" href="../css/board.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="../js/ejs.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
 
 <body>
-    <canvas id="myCanvas" width="400" height="400" style="border:1px solid #d3d3d3;">
+    <div class="background">
+        <div class="palette-column">
+        </div>
+        <div id="overlay"></div>
+        <div class="canvas-column">
+            <div class="status-bar">
+            </div>
+            <div>
+                <canvas id="myCanvas" width="600px" height="550px" class="canvas"">
+            </div>
+        </div>
+        <div class = " player-column">
+                    <div class="player-section">
+                        <table id="players">
+                            <%players.map( player => {%>
+                            <tr>
+                                <td><%= player.playerName %></td>
+                            </tr>
+                            <%})%>
+                        </table>
+                    </div>
+                    <div class="chat-section">
+                        <ul class="messages" id="messages"></ul>
+                        <div class="message-section">
+                            <form id="message-form" class="message-form" action="">
+                                <input class="message-form-input" placeholder="Type your guess here!" id="m"
+                                    autocomplete="off" />
+                                <button class="message-form-button">Send</button>
+                            </form>
+                        </div>
+                    </div>
+            </div>
+        </div>
 </body>
 <script>
     const socket = io.connect('http://localhost:3300');
     $(document).ready(function () {
         init();
         joinRoom();
+        getPlayers();
+    });
+
+    $('#message-form').submit(function (e) {
+        console.log('send message');
+        e.preventDefault(); // prevents page reloading
+
+        var jsonUserData = JSON.parse(sessionStorage.room);
+        var playerData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
+        var data = { message: $('#m').val(), playerData: playerData };
+
+        socket.emit('message', data);
+        $('#m').val('');
+        return false;
     });
 
     var ctx;
+    var $canvas;
     function init() {
-        var $canvas = $("#myCanvas");
+        $canvas = $("#myCanvas");
         ctx = $canvas[0].getContext('2d');
 
         var canvasOffset = $canvas.offset();
@@ -48,9 +98,9 @@
 
     function sendEventToServer(e) {
         var jsonUserData = JSON.parse(sessionStorage.room);
-        var drawingData = { x : e.clientX, y : e.clientY, type : event.type};
-        var userData = {playerName: jsonUserData.playerName, roomName: jsonUserData.roomName};
-        var data = {drawingData: drawingData, userData: userData};
+        var drawingData = { x: e.clientX, y: e.clientY, type: event.type };
+        var userData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
+        var data = { drawingData: drawingData, userData: userData };
         socket.emit('draw', data);
     }
 
@@ -59,8 +109,37 @@
             socket.emit('join', sessionStorage.room);
         }
     }
- 
+
+    function getPlayers() {
+        if (typeof (sessionStorage) != "undefined") {
+            var jsonUserData = JSON.parse(sessionStorage.room);
+            let roomName = jsonUserData.roomName;
+            $.ajax({
+                url: "/getPlayers",
+                type: "GET",
+                data: { roomName: roomName },
+                success: function (data) {
+                    let players = JSON.parse(data);
+                    let html = ejs.render(`
+                        <? players.forEach(player => {?>
+                        <tr>
+                            <td><?= player.playerName ?></td>
+                        </tr>
+                        <?}) ?>`, { players: players },
+                        { delimiter: '?' });
+                    $('#players').html(html);
+                }
+            });
+        }
+    }
+
     function draw(x, y, event) {
+        var canvasOffset = $canvas.offset();
+        var leftOffset = canvasOffset.left;
+        var topOffset = canvasOffset.top;
+        x = x - leftOffset;
+        y = y - topOffset;
+
         if (event.type == "mousedown") {
             ctx.beginPath()
             ctx.moveTo(x, y)
@@ -79,8 +158,21 @@
         draw(event.x, event.y, event);
     });
 
-    socket.on('connectToRoom', (event) => {
-        console.log(event);
+    socket.on('connectToRoom', (message) => {
+        console.log(message);
+        getPlayers();
+    });
+
+    socket.on('event', (message) => {
+        console.log(message);
+        $('#messages').append($('<li>').text(message));
+        getPlayers();
+    });
+
+    socket.on('message', (messageData) => {
+        console.log(messageData);
+        let messageJson = JSON.parse(messageData);
+        $('#messages').append($('<li>').text(messageJson.player.playerName + ": " + messageJson.message));
     });
 </script>
 

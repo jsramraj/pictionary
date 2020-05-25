@@ -1,4 +1,5 @@
 let roomManager = require('./room-manager')
+let gameManager = require('./game-manager')
 
 let io;
 const initiateSocketConnection = function (server) {
@@ -18,6 +19,11 @@ const initiateSocketConnection = function (server) {
 
         socket.on('message', function (data) {
             onMessage(data);
+        });
+
+        socket.on('createRound', function (roomName) {
+            console.log('creating round for room ' + roomName);
+            gameManager.createRound(roomName);
         });
 
         socket.on('disconnect', () => {
@@ -52,8 +58,16 @@ function onMessage(messageData) {
         message: messageData.message
     }
     console.log(data);
-    io.sockets.in(playerData.roomName).emit('message', JSON.stringify(data));
-    console.log(playerData.playerName + ': ' + messageData.message);
+    let guessed = gameManager.validateGuess(messageData.message, playerData.roomName);
+    if (guessed === true) {
+        let room = roomManager.getRoom(playerData.roomName);
+        gameManager.updateScore(room, playerData.playerName);
+        io.sockets.in(playerData.roomName).emit('event', playerData.playerName + ' guessed the word');
+        console.log(playerData.playerName + ' guessed the word');
+    } else {
+        io.sockets.in(playerData.roomName).emit('message', JSON.stringify(data));
+        console.log(playerData.playerName + ': ' + messageData.message);
+    }
 }
 
 module.exports = { initiateSocketConnection };

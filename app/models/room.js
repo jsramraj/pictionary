@@ -2,11 +2,11 @@
 
 class Room {
     players = [];
+    game;
 
-    constructor(roomName, noOfRounds, timeToGuess) {
+    constructor(roomName, game) {
         this.roomName = roomName;
-        this.noOfRounds = noOfRounds;
-        this.timeToGuess = timeToGuess;
+        this.game;
     }
 
     addPlayerToRoom = function (player) {

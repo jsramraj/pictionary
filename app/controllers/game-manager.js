@@ -1,0 +1,47 @@
+const Game = require('../models/game')
+const Round = require('../models/round')
+const ScoreCard = require('./scorecard')
+
+roundData = {};
+gameData = {};
+
+const createGame = function (roomName, noOfRounds, timeToGuess) {
+    let game = new Game(noOfRounds, timeToGuess);
+    gameData[roomName] = game;
+    return game;
+}
+
+const createRound = function (roomName) {
+    let game = gameData[roomName];
+    if (game.currentRound <= game.noOfRounds) {
+        game.currentRound++
+        let word = 'ball';
+        let round = new Round(game.currentRound, word);
+        roundData[roomName] = round;
+        return round;
+    }
+    return undefined;
+}
+
+const validateGuess = function (guessedWord, roomName) {
+    let round = roundData[roomName];
+    if (typeof (round) != "undefined") {
+        return round.word == guessedWord;
+    }
+    return false;
+}
+
+const updateScore = function (room, playerName) {
+    let round = roundData[room.roomName];
+    if (typeof (round) != "undefined") {
+        let winners = Object.keys(round.scores).length;
+        round.scores[playerName] = room.players.length - winners * 10;
+    }
+}
+
+const saveScore = function (roomName) {
+    let round = roundData[roomName];
+    ScoreCard.updateScoreCard(round, roomName);
+}
+
+module.exports = { createGame, createRound, validateGuess, updateScore, saveScore }

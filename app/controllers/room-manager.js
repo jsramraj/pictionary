@@ -1,5 +1,6 @@
 var Room = require('../models/room')
 const Player = require('../models/player')
+const GameManager = require('./game-manager')
 
 var roomNo = 1;
 var rooms = [];
@@ -11,9 +12,13 @@ const getRoomName = function () {
 
 const createRoom = function (noOfRounds, timeToGuess) {
     console.log(noOfRounds + ' ' + timeToGuess);
+
     let roomName = getRoomName();
-    let room = new Room(roomName, noOfRounds, timeToGuess);
+    let game = GameManager.createGame(roomName, noOfRounds, timeToGuess);
+
+    let room = new Room(roomName, game);
     rooms.push(room);
+
     return room;
 }
 
@@ -40,8 +45,11 @@ const removePlayerFromRoom = function (roomName, playerName) {
 
 const getPlayer = function (roomName, playerName) {
     var room = rooms.find(room => room.roomName == roomName);
-    var player = room.players.find(player => player.playerName == playerName);
-    return player;
+    if (typeof (room) != "undefined") {
+        var player = room.players.find(player => player.playerName == playerName);
+        return player;
+    }
+    return undefined;
 }
 
 const getPlayerForSocket = function (socketId) {
@@ -53,6 +61,11 @@ const getPlayerForSocket = function (socketId) {
         }
     })
     return playerData;
+}
+
+const getRoom = function (roomName) {
+    var room = rooms.find(room => room.roomName == roomName);
+    return room;
 }
 
 const getPlayers = function (roomName) {
@@ -70,4 +83,4 @@ const setSocketId = function (roomName, playerName, socketId) {
     }
 }
 
-module.exports = { createRoom, addPlayerToRoom, removePlayerFromRoom, getPlayer, getPlayerForSocket, getPlayers, setSocketId }
+module.exports = { createRoom, addPlayerToRoom, removePlayerFromRoom, getPlayer, getPlayerForSocket, getPlayers, getRoom, setSocketId }
