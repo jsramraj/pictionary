@@ -31,8 +31,15 @@
             <div id="game-scoreboard" class="overlay" style="display: none;">
             </div>
             <div class="status-bar">
-                <p class="round-info" id="round-info">Round n of n</p>
-                <p class="timer" id="timer">00:00</p>
+                <div class="round-info">
+                    <p id="round-info">Round n of n</p>
+                </div>
+                <div class="choosen-word">
+                    <p id="choosen-word">_ _ _ _</p>
+                </div>
+                <div class="timer">
+                    <p id="timer">00:00</p>
+                </div>
             </div>
             <div>
                 <canvas id="myCanvas" width="600px" height="550px" class="canvas"">
@@ -223,6 +230,9 @@
             { delimiter: '?' });
         console.log(html);
         $('#round-info').html(html);
+
+        let word = round.word.replace(/[^ ]/gi, '*');
+        $('#choosen-word').text(word);
     }
 
     function displayRoundScoreboard(round) {
@@ -241,7 +251,7 @@
                     <?} ?>`,
             { scores: scores },
             { delimiter: '?' });
-            console.log(html);
+        console.log(html);
         $('#round-scoreboard-table').html(html);
         $('#round-scoreboard').css("display", "block");
     }
@@ -268,8 +278,8 @@
 
     socket.on('roundStart', (round) => {
         var display = document.querySelector('#timer');
-        startTimer(round.timeToGuess, display);
-        updateRoundInfo(round);
+        startTimer(round.round.timeToGuess, display);
+        updateRoundInfo(round.round);
         hideRoundScoreboard();
     });
 

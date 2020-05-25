@@ -87,9 +87,8 @@ function onGameEnded(game, roomName) {
 function onRoundStarted(game, round, roomName) {
     console.log('Round ' + round.roundNo + ' has started for room: ' + roomName);
     io.sockets.in(roomName).emit('roundStart', {
-        roundNo: round.roundNo,
         noOfRounds: game.noOfRounds,
-        timeToGuess: round.timeToGuess
+        round: round
     });
 }
 

@@ -1,6 +1,7 @@
 const Game = require('../models/game')
 const Round = require('../models/round')
 const ScoreCard = require('./scorecard')
+const wordGenerator = require('./random-word-generator')
 
 roundData = {};
 gameData = {};
@@ -41,7 +42,8 @@ const createRound = function (roomName) {
     let game = gameData[roomName];
     if (game.currentRound <= game.noOfRounds) {
         game.currentRound++
-        let word = 'ball' + game.currentRound;
+        let word = wordGenerator.getRandomWord(roomName, 'medium');
+        console.log('random word ' + word);
         let round = new Round(game.currentRound, game.timeToGuess, word);
         roundData[roomName] = round;
         return round;

@@ -159,12 +159,22 @@
     background: linear-gradient(to right, #ff105f, #ffad06);
     padding: 0px 10px 15px 10px;
     margin-bottom: 10px;
+    width: 100%;
 }
 
 .round-info {
     float: left;
+    width: 100px;
     font-family: "Comic Sans MS", cursive, sans-serif;
     color: white;
+}
+
+.choosen-word {
+    text-align: center;
+    float: left;
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    color: white;
+    margin-left: 150px;
 }
 
 @font-face {
@@ -173,6 +183,7 @@
 }
 
 .timer {
+    width: 100px;
     float: right;
     font-family: 'Timer';
     font-size: 22px;

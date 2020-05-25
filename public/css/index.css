@@ -6,9 +6,7 @@
 .background {
     height: 100%;
     width: 100%;
-    background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(../assets/images/game.png);
-    background-position: center;
-    background-size: cover;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.8)), url(../assets/images/board-bg.jpg);
     position: absolute;
 }
 
