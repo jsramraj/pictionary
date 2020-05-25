@@ -42,7 +42,7 @@
                 </div>
             </div>
             <div>
-                <canvas id="myCanvas" width="600px" height="550px" class="canvas"">
+                <canvas id="myCanvas" width="600px" height="550px" class="canvas">
             </div>
         </div>
         <div class = " player-column">
@@ -223,6 +223,11 @@
     }
 
     function updateRoundInfo(round) {
+
+        let activePlayer = round.players.find(player => player.active === true);
+        let isCurrentUserActive = (activePlayer.playerName == roomData.playerName);
+        $('#myCanvas').css("pointer-events", (isCurrentUserActive === true ? "auto" : "none"));
+
         console.log(round);
         let html = ejs.render(`
                         Round <?= roundNo ?> of <?= noOfRounds ?>`,

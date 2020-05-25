@@ -26,6 +26,7 @@ const addPlayerToRoom = function (roomName, player) {
     var room = rooms.find(room => room.roomName == roomName);
     if (typeof (room) != "undefined") {
         room.addPlayerToRoom(player);
+        GameManager.setPlayers(roomName, room.players);
         return 200;
     }
     //no room found with that name
@@ -39,6 +40,7 @@ const removePlayerFromRoom = function (roomName, playerName) {
         const index = room.players.indexOf(player);
         if (index > -1) {
             room.players.splice(index, 1);
+            GameManager.setPlayers(roomName, room.players);
         }
     }
 }

@@ -5,6 +5,7 @@ const wordGenerator = require('./random-word-generator')
 
 roundData = {};
 gameData = {};
+var players = {};
 
 gameStartCallback = function () { };
 gameEndCallback = function () { };
@@ -33,39 +34,70 @@ const getGame = function (roomName) {
 const startGame = function (roomName) {
     let game = getGame(roomName);
     gameStartCallback(game, roomName);
-    let round = createRound(roomName);
+    setAsActivePlayer(roomName, 0);
+    let round = createRound(roomName, true);
     startRound(round, roomName);
     return round;
 }
 
-const createRound = function (roomName) {
+const createRound = function (roomName, newRound) {
     let game = gameData[roomName];
     if (game.currentRound <= game.noOfRounds) {
-        game.currentRound++
+        if (newRound === true)
+            game.currentRound++;
         let word = wordGenerator.getRandomWord(roomName, 'medium');
         console.log('random word ' + word);
         let round = new Round(game.currentRound, game.timeToGuess, word);
         roundData[roomName] = round;
+        round.players = players[roomName];
+
         return round;
     }
     return undefined;
 }
 
+const setPlayers = function (roomName, _players) {
+    players[roomName] = _players;
+}
+
+const setAsActivePlayer = function (roomName, index) {
+    let currentPlayers = players[roomName];
+    currentPlayers.forEach((player, _index) => {
+        player.active = (index == _index);
+    });
+}
+
 const startRound = function (round, roomName) {
     roundStartCallback(getGame(roomName), round, roomName);
     console.log('setting time out: ' + round.timeToGuess);
-    setTimeout(endRound, round.timeToGuess * 1000, roomName);
+    setTimeout(endTurn, round.timeToGuess * 1000, roomName);
 }
 
-const endRound = function (roomName) {
+const startTurn = function (roomName) {
+    let round = roundData[roomName];
+    let indexOfActivePlayer = round.players.findIndex(player => player.active === true);
+    console.log('indexOfActivePlayer ' + indexOfActivePlayer);
+    if (indexOfActivePlayer + 1 < round.players.length) {
+        setAsActivePlayer(roomName, indexOfActivePlayer + 1);
+        let nextRound = createRound(roomName, false);
+        startRound(round, roomName);
+    } else {
+        setAsActivePlayer(roomName, 0);
+        let nextRound = createRound(roomName, true);
+        startRound(round, roomName);
+        if (typeof (nextRound) == "undefined") {
+            let game = getGame(roomName);
+            gameEndCallback(game, roomName);
+        }
+    }
+}
+
+const endTurn = function (roomName) {
     let round = roundData[roomName];
     roundEndCallback(getGame(roomName), round, roomName);
     saveScore(roomName);
-    let nextRound = createRound(roomName);
-    if (typeof (nextRound) == "undefined") {
-        let game = getGame(roomName);
-        gameEndCallback(game, roomName);
-    }
+
+    setTimeout(startTurn, 5 * 1000, roomName);
 }
 
 const validateGuess = function (guessedWord, roomName) {
@@ -95,4 +127,4 @@ const saveScore = function (roomName) {
     ScoreCard.updateScoreCard(round, roomName);
 }
 
-module.exports = { setCallbacks, createGame, startGame, getGame, createRound, validateGuess, updateScore, saveScore }
+module.exports = { setCallbacks, createGame, startGame, getGame, createRound, validateGuess, updateScore, saveScore, setPlayers, setAsActivePlayer }

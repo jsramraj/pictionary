@@ -36,7 +36,7 @@ app.get('/board', (req, res) => {
 app.post('/createRoom', function (req, res) {
     let room = roomManager.createRoom(req.body.noOfRounds, req.body.timeToGuess);
     let player = playerManager.createPlayer(req.body.playerName, true);
-    room.addPlayerToRoom(player);
+    roomManager.addPlayerToRoom(room.roomName, player);
 
     var data = {
         playerName: req.body.playerName,
