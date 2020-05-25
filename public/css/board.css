@@ -49,6 +49,12 @@
     border: 1px solid #000;
 }
 
+.messages-section {
+    width: 100%;
+    height: 85%;
+    overflow: auto;
+}
+
 .list {
     width: 100%;
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
@@ -117,13 +123,14 @@
     margin: 0;
     padding: 0;
     font-family: "Comic Sans MS", cursive, sans-serif;
+    width: 100%;
 }
 
-#messages li {
+#messages td {
     padding: 5px 10px;
 }
 
-#messages li:nth-child(odd) {
+#messages tr:nth-child(odd) {
     background: #eee;
 }
 
