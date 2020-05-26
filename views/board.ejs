@@ -17,6 +17,7 @@
     <div class="background">
         <div class="palette-column">
             <div class="colorPickSelector"></div>
+            <div><i class="fa fa-trash" id="delete-button"></i></div>
         </div>
         <div class="canvas-column">
             <div id="overlay" class="overlay">
@@ -109,6 +110,11 @@
         return false;
     });
 
+    $('#delete-button').click(function () {
+        clearBoard();
+        socket.emit('clear', roomData.roomName);
+    });
+
     function initializeColorPicker() {
         $(".colorPickSelector").colorPick({
             'initialColor': '#000',
@@ -153,6 +159,7 @@
         });
 
         $canvas.on('mousedown', function (e) {
+            console.log('mousedown ' + e);
             sendEventToServer(e);
             drag = true;
             draw(e.clientX, e.clientY, e);
@@ -168,7 +175,7 @@
 
     function sendEventToServer(e) {
         var jsonUserData = JSON.parse(sessionStorage.room);
-        var drawingData = { x: e.clientX, y: e.clientY, type: event.type, color:  color};
+        var drawingData = { x: e.clientX, y: e.clientY, type: event.type, color: color };
         var userData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
         var data = { drawingData: drawingData, userData: userData };
         socket.emit('draw', data);
@@ -299,11 +306,19 @@
         $('#round-scoreboard').css("display", "none");
     }
 
+    function clearBoard() {
+        ctx.clearRect(0, 0, $canvas[0].width, $canvas[0].height);
+    }
+
     socket.on('draw', (event) => {
         var eventJSOn = JSON.stringify(event);
         color = event.color;
         ctx.strokeStyle = color;
         draw(event.x, event.y, event);
+    });
+
+    socket.on('clear', (event) => {
+        clearBoard();
     });
 
     socket.on('connectToRoom', (message) => {
@@ -328,6 +343,7 @@
         updateRoundInfo(round.round);
         hideRoundScoreboard();
         getPlayers();
+        clearBoard();
     });
 
     socket.on('roundEnd', (round) => {

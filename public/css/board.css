@@ -273,6 +273,18 @@
     -ms-transition: all linear .2s;
     -o-transition: all linear .2s;
     transition: all linear .2s;
-  }
-  
-  .colorPickSelector:hover { transform: scale(1.1); }
+}
+
+.colorPickSelector:hover {
+    transform: scale(1.1);
+}
+
+#delete-button {
+    margin-top: 25px;
+    padding-left: 7px;
+    font-size: 40px;
+}
+
+.fa-trash:hover {
+    color:red;
+}

@@ -17,6 +17,10 @@ const initiateSocketConnection = function (server) {
             io.sockets.in(data.userData.roomName).emit('draw', data.drawingData);
         });
 
+        socket.on('clear', function (roomName) {
+            io.sockets.in(roomName).emit('clear', {});
+        });
+
         socket.on('join', function (room) {
             handleJoin(room, socket);
         });
