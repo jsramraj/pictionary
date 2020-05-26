@@ -104,7 +104,7 @@
     </div>
 </body>
 <script>
-    const socket = io.connect('https://play-pictionary.herokuapp.com/');
+    const socket = io.connect('http://localhost:3300');
     let roomData;
     var color = "#000";
 
@@ -197,32 +197,38 @@
         var topOffset = canvasOffset.top;
 
         var drag = false;
+        var events = [];
         $canvas.on('mousemove', function (e) {
             if (drag) {
-                draw(e.clientX, e.clientY, e);
-                sendEventToServer(e);
+                events.push({ x: e.clientX, y: e.clientY, type: e.type });
+                draw(e.clientX, e.clientY, e.type);
+                // sendEventToServer(e);
             }
         });
 
         $canvas.on('mousedown', function (e) {
             drag = true;
-            draw(e.clientX, e.clientY, e);
-            sendEventToServer(e);
+            events = [];
+            events.push({ x: e.clientX, y: e.clientY, type: e.type });
+            draw(e.clientX, e.clientY, e.type);
+            // sendEventToServer(e);
         });
 
         $canvas.on('mouseup', function (e) {
             drag = false;
-            draw(e.clientX, e.clientY, e);
-            sendEventToServer(e);
+            events.push({ x: e.clientX, y: e.clientY, type: e.type });
+            draw(e.clientX, e.clientY, e.type);
+            sendEventToServer(events);
         });
         initializeColorPicker();
     };
 
-    async function sendEventToServer(e) {
+    async function sendEventToServer(_events) {
         var jsonUserData = JSON.parse(sessionStorage.room);
-        var drawingData = { x: e.clientX, y: e.clientY, type: event.type, color: color };
+        var drawingData = { events: _events, color: color };
         var userData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
         var data = { drawingData: drawingData, userData: userData };
+        console.log(_events);
         emitData(data);
     }
 
@@ -268,22 +274,22 @@
         socket.emit('play', roomData.roomName);
     }
 
-    function draw(x, y, event) {
+    function draw(x, y, type) {
         var canvasOffset = $canvas.offset();
         var leftOffset = canvasOffset.left;
         var topOffset = canvasOffset.top;
         x = x - leftOffset;
         y = y - topOffset;
 
-        if (event.type == "mousedown") {
+        if (type == "mousedown") {
             ctx.beginPath()
             ctx.moveTo(x, y)
         }
-        else if (event.type == "mousemove") {
+        else if (type == "mousemove") {
             ctx.lineTo(x, y)
             ctx.stroke()
         }
-        else if (event.type == "mouseup") {
+        else if (type == "mouseup") {
             ctx.closePath()
         }
     };
@@ -312,10 +318,11 @@
         clearInterval(timerInterval);
     }
 
+    var isCurrentUserActive = false;
     function updateRoundInfo(roundData) {
 
         let activePlayer = roundData.round.players.find(player => player.active === true);
-        let isCurrentUserActive = (activePlayer.playerName == roomData.playerName);
+        isCurrentUserActive = (activePlayer.playerName == roomData.playerName);
         $('#myCanvas').css("pointer-events", (isCurrentUserActive === true ? "auto" : "none"));
 
         let html = ejs.render(`
@@ -383,11 +390,15 @@
         ctx.clearRect(0, 0, $canvas[0].width, $canvas[0].height);
     }
 
-    socket.on('draw', (event) => {
-        var eventJSOn = JSON.stringify(event);
-        color = event.color;
+    socket.on('draw', (drawingData) => {
+        if (isCurrentUserActive === true) {
+            return;
+        }
+        color = drawingData.color;
         ctx.strokeStyle = color;
-        draw(event.x, event.y, event);
+        drawingData.events.forEach(event => {
+            draw(event.x, event.y, event.type);
+        });
     });
 
     socket.on('clear', (event) => {
