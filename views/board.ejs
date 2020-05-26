@@ -200,20 +200,20 @@
         $canvas.on('mousemove', function (e) {
             if (drag) {
                 draw(e.clientX, e.clientY, e);
-                // sendEventToServer(e);
+                sendEventToServer(e);
             }
         });
 
         $canvas.on('mousedown', function (e) {
             drag = true;
             draw(e.clientX, e.clientY, e);
-            // sendEventToServer(e);
+            sendEventToServer(e);
         });
 
         $canvas.on('mouseup', function (e) {
             drag = false;
             draw(e.clientX, e.clientY, e);
-            // sendEventToServer(e);
+            sendEventToServer(e);
         });
         initializeColorPicker();
     };
@@ -223,7 +223,7 @@
         var drawingData = { x: e.clientX, y: e.clientY, type: event.type, color: color };
         var userData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
         var data = { drawingData: drawingData, userData: userData };
-        socket.emit('draw', data);
+        // socket.emit('draw', data);
     }
 
     function joinRoom() {
