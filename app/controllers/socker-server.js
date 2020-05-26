@@ -89,8 +89,9 @@ function onGameStarted(game, roomName) {
 }
 
 function onGameEnded(game, roomName) {
+    let players = roomManager.getPlayers(roomName);
     console.log('Game ended for room: ' + roomName);
-    io.sockets.in(roomName).emit('gameEnd', {});
+    io.sockets.in(roomName).emit('gameEnd', players);
 }
 
 function onRoundStarted(game, round, roomName) {

@@ -49,6 +49,15 @@
                 </div>
             </div>
             <div id="game-scoreboard" class="overlay" style="display: none;">
+                <div class="score-board-content">
+                    <div class="score-title">
+                        <p class="round-info">Overall Scoreboard</p>
+                    </div>
+                    <div class="score-table">
+                        <table class="list score" id="overall-scoreboard-table">
+                        </table>
+                    </div>
+                </div>
             </div>
             <div class="status-bar">
                 <div class="round-info">
@@ -187,7 +196,6 @@
         var leftOffset = canvasOffset.left;
         var topOffset = canvasOffset.top;
 
-        console.log($("#myCanvas"));
         var drag = false;
         $canvas.on('mousemove', function (e) {
             if (drag) {
@@ -197,7 +205,6 @@
         });
 
         $canvas.on('mousedown', function (e) {
-            console.log('mousedown ' + e);
             sendEventToServer(e);
             drag = true;
             draw(e.clientX, e.clientY, e);
@@ -301,30 +308,27 @@
         clearInterval(timerInterval);
     }
 
-    function updateRoundInfo(round) {
+    function updateRoundInfo(roundData) {
 
-        let activePlayer = round.players.find(player => player.active === true);
+        let activePlayer = roundData.round.players.find(player => player.active === true);
         let isCurrentUserActive = (activePlayer.playerName == roomData.playerName);
         $('#myCanvas').css("pointer-events", (isCurrentUserActive === true ? "auto" : "none"));
 
-        console.log(round);
         let html = ejs.render(`
                         Round <?= roundNo ?> of <?= noOfRounds ?>`,
-            { roundNo: round.roundNo, noOfRounds: round.noOfRounds },
+            { roundNo: roundData.round.roundNo, noOfRounds: roundData.noOfRounds },
             { delimiter: '?' });
-        console.log(html);
         $('#round-info').html(html);
 
-        let word = round.word.replace(/[^ ]/gi, '*');
+        let word = roundData.round.word.replace(/[^ ]/gi, '*');
         if (isCurrentUserActive === true) {
-            $('#choosen-word').text(round.word);
+            $('#choosen-word').text(roundData.round.word);
         } else {
             $('#choosen-word').text(word);
         }
     }
 
     function displayRoundScoreboard(round) {
-        console.log(round);
         let scores = round.scores;
         let html = ejs.render(`
                     <colgroup>
@@ -339,9 +343,27 @@
                     <?} ?>`,
             { scores: scores },
             { delimiter: '?' });
-        console.log(html);
         $('#round-scoreboard-table').html(html);
         $('#round-scoreboard').css("display", "block");
+    }
+
+    function displayOverallScoreboard(_players) {
+        hideRoundScoreboard();
+        let html = ejs.render(`
+                    <colgroup>
+                            <col span="1" style="width: 75%;">
+                            <col span="1" style="width: 25%;">
+                    </colgroup>                    
+                    <? players.forEach(player => {?>
+                    <tr>
+                        <td><?= player.playerName ?></td>
+                        <td><?= player.score ?></td>
+                    </tr>
+                    <?}) ?>`,
+            { players: _players },
+            { delimiter: '?' });
+        $('#overall-scoreboard-table').html(html);
+        $('#game-scoreboard').css("display", "block");
     }
 
     function hideRoundScoreboard() {
@@ -373,14 +395,11 @@
     })
 
     socket.on('connectToRoom', (message) => {
-        console.log(message);
         $('#room-name').text('Room: ' + roomData.roomName);
         getPlayers();
     });
 
     socket.on('event', (message) => {
-        console.log(message);
-
         let markup = '<tr><td>' + message + '</td></tr>';
         $('#messages').append(markup)
         document.getElementById('messages-section').scrollTop = 10000;
@@ -391,7 +410,7 @@
     socket.on('roundStart', (round) => {
         var display = document.querySelector('#timer');
         startTimer(round.round.timeToGuess, display);
-        updateRoundInfo(round.round);
+        updateRoundInfo(round);
         hideRoundScoreboard();
         getPlayers();
         clearBoard();
@@ -402,8 +421,13 @@
         displayRoundScoreboard(round);
     });
 
+    socket.on('gameEnd', (players) => {
+        stopTimer();
+        console.log('game ended');
+        displayOverallScoreboard(players);
+    });
+
     socket.on('message', (messageData) => {
-        console.log(messageData);
         let messageJson = JSON.parse(messageData);
 
         let markup = '<tr><td>' +

@@ -45,7 +45,7 @@ const createRound = function (roomName, newRound) {
     if (typeof (game) == "undefined") {
         return undefined;
     }
-    if (game.currentRound <= game.noOfRounds) {
+    if (game.currentRound < game.noOfRounds) {
         if (newRound === true)
             game.currentRound++;
         let word = wordGenerator.getRandomWord(roomName, 'medium');
