@@ -10,10 +10,6 @@ const initiateSocketConnection = function (server) {
     io = require('socket.io')(server);
     io.on('connection', (socket) => {
         socket.on('draw', function (data) {
-            // console.log(data.type + ' at ' + data.x + ', ' + data.y);
-            if (data.drawingData.type == 'mousedown') {
-                console.log(data.userData.playerName + ' is drawing at ' + data.userData.roomName + ' socket id ' + socket.id);
-            }
             io.sockets.in(data.userData.roomName).emit('draw', data.drawingData);
         });
 
