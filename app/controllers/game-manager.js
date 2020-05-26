@@ -109,7 +109,7 @@ const startTurn = function (roomName) {
             let score = ScoreCard.getScoreCard(roomName);
             gameEndCallback(score, roomName);
         } else {
-            startRound(round, roomName);
+            startRound(nextRound, roomName);
         }
     } else {
         setAsActivePlayer(roomName, 0);
@@ -118,7 +118,7 @@ const startTurn = function (roomName) {
             let game = getGame(roomName);
             gameEndCallback(game, roomName);
         } else {
-            startRound(round, roomName);
+            startRound(nextRound, roomName);
         }
     }
 }

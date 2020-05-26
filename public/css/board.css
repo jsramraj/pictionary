@@ -155,7 +155,7 @@
     padding: 300px 0;
 }
 
-.button {
+#play-button {
     width: 250px;
     height: 75px;
     background: rgb(130, 224, 255);
@@ -165,6 +165,11 @@
     font-size: 50px;
     cursor: pointer;
     background: linear-gradient(to right, #ff105f, #ffad06);
+    transition: all linear .1s;
+}
+
+#play-button:hover {
+    transform: scale(1.1);
 }
 
 .status-bar {
@@ -304,4 +309,9 @@
 .fa-eraser:hover {
     transition: all linear .1s;
     transform: scale(1.5);
+}
+
+#room-name-div-start {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+    color: white;
 }

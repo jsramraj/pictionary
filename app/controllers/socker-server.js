@@ -94,7 +94,7 @@ function onGameEnded(game, roomName) {
 }
 
 function onRoundStarted(game, round, roomName) {
-    console.log('Round ' + round.roundNo + ' has started for room: ' + roomName);
+    console.log('Round ' + round.roundNo + ' has started for room: ' + roomName + ', word: ' + round.word);
     io.sockets.in(roomName).emit('roundStart', {
         noOfRounds: game.noOfRounds,
         round: round

@@ -30,7 +30,12 @@
         </div>
         <div class="canvas-column">
             <div id="overlay" class="overlay">
-                <button id="play-button" class="button">Play</button>
+                <div id="room-name-div-start">
+                    <p id="room-name-start">Private code: test</p>
+                </div>
+                <div>
+                    <button id="play-button">Play</button>
+                </div>
             </div>
             <div id="round-scoreboard" class="score-board-overlay" style="display: none;">
                 <div class="score-board-content">
@@ -173,6 +178,7 @@
                 $('#overlay').css("display", "none");
             }
         }
+        $('#room-name-start').text('Private code: ' + roomData.roomName);
 
         $canvas = $("#myCanvas");
         ctx = $canvas[0].getContext('2d');
@@ -310,7 +316,11 @@
         $('#round-info').html(html);
 
         let word = round.word.replace(/[^ ]/gi, '*');
-        $('#choosen-word').text(word);
+        if (isCurrentUserActive === true) {
+            $('#choosen-word').text(round.word);
+        } else {
+            $('#choosen-word').text(word);
+        }
     }
 
     function displayRoundScoreboard(round) {
