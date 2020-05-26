@@ -205,20 +205,20 @@
         });
 
         $canvas.on('mousedown', function (e) {
-            sendEventToServer(e);
             drag = true;
             draw(e.clientX, e.clientY, e);
+            sendEventToServer(e);
         });
 
         $canvas.on('mouseup', function (e) {
-            sendEventToServer(e);
             drag = false;
             draw(e.clientX, e.clientY, e);
+            sendEventToServer(e);
         });
         initializeColorPicker();
     };
 
-    function sendEventToServer(e) {
+    async function sendEventToServer(e) {
         var jsonUserData = JSON.parse(sessionStorage.room);
         var drawingData = { x: e.clientX, y: e.clientY, type: event.type, color: color };
         var userData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
