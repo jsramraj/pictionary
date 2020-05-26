@@ -21,6 +21,10 @@ const initiateSocketConnection = function (server) {
             io.sockets.in(roomName).emit('clear', {});
         });
 
+        socket.on('brush-size', function (data) {
+            io.sockets.in(data.roomName).emit('brush-size', data.brushSize);
+        });
+
         socket.on('join', function (room) {
             handleJoin(room, socket);
         });

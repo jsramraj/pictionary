@@ -1,0 +1,79 @@
+.brush-size-div {
+    position: relative;
+    display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+/* Tooltip text */
+
+.brush-size-container {
+    visibility: hidden;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+    top: 10px;
+    left: 0px;
+    width: 155px;
+    height: 50px;
+}
+
+.brush-size-div .brush-size-container::after {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    /* To the left of the tooltip */
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+
+.brush-size-div:hover .brush-size-container {
+    visibility: visible;
+}
+
+.brush-size-container:hover .brush-size-container {
+    visibility: visible;
+}
+
+.brush-size-tile {
+    float: left;
+    margin: 5px;
+    width: 40px;
+    height: 40px;
+    border: 0px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+
+.brush-size-tile:hover {
+    border: 1px solid #fff;
+}
+
+#brush-size {
+    font-size: 10px;
+}
+
+#brush-size-small {
+    font-size: 10px;
+}
+
+#brush-size-medium {
+    font-size: 20px;
+}
+
+#brush-size-large {
+    font-size: 30px;
+}

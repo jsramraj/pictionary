@@ -42,6 +42,9 @@ const startGame = function (roomName) {
 
 const createRound = function (roomName, newRound) {
     let game = gameData[roomName];
+    if (typeof (game) == "undefined") {
+        return undefined;
+    }
     if (game.currentRound <= game.noOfRounds) {
         if (newRound === true)
             game.currentRound++;
@@ -62,6 +65,9 @@ const setPlayers = function (roomName, _players) {
 
 const setAsActivePlayer = function (roomName, index) {
     let currentPlayers = players[roomName];
+    if (typeof (currentPlayers) == "undefined") {
+        return;
+    }
     currentPlayers.forEach((player, _index) => {
         player.active = (index == _index);
     });
@@ -82,6 +88,9 @@ const updateFullScore = function (roomName, score) {
 var guessTimer;
 var timerToNextRound;
 const startRound = function (round, roomName) {
+    if (typeof (round) == "undefined") {
+        return;
+    }
     roundStartCallback(getGame(roomName), round, roomName);
     console.log('setting time out: ' + round.timeToGuess);
     guessTimer = setTimeout(endTurn, round.timeToGuess * 1000, roomName);

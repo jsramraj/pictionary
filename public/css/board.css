@@ -285,6 +285,11 @@
     font-size: 40px;
 }
 
+#brush-size {
+    margin-top: 25px;
+    font-size: 20px;
+}
+
 .fa-trash:hover {
     color:red;
 }

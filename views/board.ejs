@@ -2,6 +2,7 @@
 
 <head>
     <link rel="stylesheet" type="text/css" href="../css/board.css">
+    <link rel="stylesheet" type="text/css" href="../css/tooltip.css">
     <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet'>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
@@ -17,6 +18,13 @@
     <div class="background">
         <div class="palette-column">
             <div class="colorPickSelector"></div>
+            <div class="brush-size-div"><i class="fa fa-circle" id="brush-size"></i>
+                <div class="brush-size-container">
+                    <div class="brush-size-tile" id="brush-size-small"><i class="fa fa-circle"></i></div>
+                    <div class="brush-size-tile" id="brush-size-medium"><i class="fa fa-circle"></i></div>
+                    <div class="brush-size-tile" id="brush-size-large"><i class="fa fa-circle"></i></div>
+                </div>
+            </div>
             <div><i class="fa fa-trash" id="delete-button"></i></div>
         </div>
         <div class="canvas-column">
@@ -113,6 +121,24 @@
     $('#delete-button').click(function () {
         clearBoard();
         socket.emit('clear', roomData.roomName);
+    });
+
+    $('#brush-size-small').click(function () {
+        $('#brush-size').css('font-size', '10px')
+        socket.emit('brush-size', { roomName: roomData.roomName, brushSize: 1 });
+        setBrushSize(1);
+    });
+
+    $('#brush-size-medium').click(function () {
+        $('#brush-size').css('font-size', '20px')
+        socket.emit('brush-size', { roomName: roomData.roomName, brushSize: 4 });
+        setBrushSize(4);
+    });
+
+    $('#brush-size-large').click(function () {
+        $('#brush-size').css('font-size', '30px')
+        socket.emit('brush-size', { roomName: roomData.roomName, brushSize: 8 });
+        setBrushSize(8);
     });
 
     function initializeColorPicker() {
@@ -306,6 +332,11 @@
         $('#round-scoreboard').css("display", "none");
     }
 
+    function setBrushSize(size) {
+        ctx.lineWidth = size;
+        console.log('setting brush size to ' + size);
+    }
+
     function clearBoard() {
         ctx.clearRect(0, 0, $canvas[0].width, $canvas[0].height);
     }
@@ -320,6 +351,10 @@
     socket.on('clear', (event) => {
         clearBoard();
     });
+
+    socket.on('brush-size', (brushSize) => {
+        setBrushSize(brushSize);
+    })
 
     socket.on('connectToRoom', (message) => {
         console.log(message);
