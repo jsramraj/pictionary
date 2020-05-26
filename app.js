@@ -1,6 +1,7 @@
 const app = require('express')();
 const server = require('http').Server(app);
 let ejs = require('ejs');
+var favicon = require('serve-favicon')
 
 const path = require('path');
 var bodyParser = require('body-parser');
@@ -23,6 +24,7 @@ server.listen(port, () => {
 app.use(require('express').static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
+app.use(favicon(path.join(__dirname, 'public', 'assets', 'images', 'favicon.ico')))
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/views/index.html');
