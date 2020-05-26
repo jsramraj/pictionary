@@ -223,7 +223,11 @@
         var drawingData = { x: e.clientX, y: e.clientY, type: event.type, color: color };
         var userData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
         var data = { drawingData: drawingData, userData: userData };
-        // socket.emit('draw', data);
+        emitData(data);
+    }
+
+    async function emitData(data) {
+        socket.emit('draw', data);
     }
 
     function joinRoom() {
