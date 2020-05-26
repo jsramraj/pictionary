@@ -285,11 +285,23 @@
     font-size: 40px;
 }
 
+#erase-button {
+    margin-top: 25px;
+    padding-left: 7px;
+    font-size: 40px;
+}
+
 #brush-size {
     margin-top: 25px;
     font-size: 20px;
 }
 
 .fa-trash:hover {
-    color:red;
+    transition: all linear .1s;
+    transform: scale(1.5);
+}
+
+.fa-eraser:hover {
+    transition: all linear .1s;
+    transform: scale(1.5);
 }

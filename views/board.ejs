@@ -25,7 +25,8 @@
                     <div class="brush-size-tile" id="brush-size-large"><i class="fa fa-circle"></i></div>
                 </div>
             </div>
-            <div><i class="fa fa-trash" id="delete-button"></i></div>
+            <div class="brush-size-div"><i class="fa fa-eraser" id="erase-button"></i></div>
+            <div class="brush-size-div"><i class="fa fa-trash" id="delete-button"></i></div>
         </div>
         <div class="canvas-column">
             <div id="overlay" class="overlay">
@@ -122,6 +123,11 @@
         clearBoard();
         socket.emit('clear', roomData.roomName);
     });
+
+    $('#erase-button').click(function () {
+        color = '#fff';
+        ctx.strokeStyle = color;
+    })
 
     $('#brush-size-small').click(function () {
         $('#brush-size').css('font-size', '10px')
