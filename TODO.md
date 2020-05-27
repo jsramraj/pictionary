@@ -1,0 +1,13 @@
+# ToDo items
+- Playing online with random players
+- Choosing difficulty levels (and build up words for each levels)
+- Giving multiple options for words
+- Persist player data and point data locally
+- Avatar for players
+- Improve UI design for the player list
+- Improve UI for the scoreboard
+- Add sounds (for turn change, correct answer, player join/leave events)
+- Avoid showing the same word for the players
+- Clear the player/room/game/score data as soon as the game end or when all the players left the room
+- Animations
+- Fill colors
