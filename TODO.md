@@ -1,4 +1,5 @@
 # ToDo items
+- Finish the round when all the members in a room guessed the right answer
 - Playing online with random players
 - Choosing difficulty levels (and build up words for each levels)
 - Giving multiple options for words
