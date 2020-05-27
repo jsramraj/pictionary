@@ -8,6 +8,8 @@ You can contribute to this source code in many ways
 - You could suggest/implement a new feature/functionality
 - You could suggest improvements to the existing feature/functionality
 
+Visit the [ToDo page](./TODO.md) to see the potential features I have envisioned.
+
 ### Guidelines for contribution
 #### Did you find a bug?
 [Create an issue](https://github.com/rails/rails/issues/new) in this project with detailed information, screenshots (if possible, the console logs)
