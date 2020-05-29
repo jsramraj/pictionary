@@ -1,19 +1,15 @@
 var Room = require('../models/room')
 const Player = require('../models/player')
 const GameManager = require('./game-manager')
+const randomWordGenerator = require('../utils/random-string-generator')
 
 var rooms = [];
-
-const getRoomName = function () {
-    //generate a 6 letter random string for room name
-    return Array(6).fill(0).map(x => Math.random().toString(36).charAt(2)).join('');
-}
 
 const createRoom = function (noOfRounds, timeToGuess) {
     console.log(noOfRounds + ' ' + timeToGuess);
 
-    let roomName = getRoomName();
-    let game = GameManager.createGame(roomName, noOfRounds, timeToGuess);
+    let roomName = randomWordGenerator.getRandomString(6);
+    let game = GameManager.createGame(noOfRounds, timeToGuess);
 
     let room = new Room(roomName, game);
     rooms.push(room);
@@ -21,11 +17,11 @@ const createRoom = function (noOfRounds, timeToGuess) {
     return room;
 }
 
-const addPlayerToRoom = function (roomName, player) {
-    var room = rooms.find(room => room.roomName == roomName);
+const addPlayerToRoom = function (roomName, playerId) {
+    var room = rooms.find(room => room.name == roomName);
     if (typeof (room) != "undefined") {
-        room.addPlayerToRoom(player);
-        GameManager.setPlayers(roomName, room.players);
+        room.addPlayerToRoom(playerId);
+        // GameManager.setPlayers(roomName, room.players);
         return 200;
     }
     //no room found with that name

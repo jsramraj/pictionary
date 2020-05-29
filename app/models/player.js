@@ -1,10 +1,14 @@
+'use strict';
+const randomWordGenerator = require('../utils/random-string-generator');
+
 class Player {
     sockerId;
     active;
     score;
-    constructor(playerName, isAdmin) {
-        this.playerName = playerName;
-        this.isAdmin = isAdmin;
+    isAdmin;
+    constructor(name) {
+        this.id = randomWordGenerator.getRandomString(6);
+        this.name = name;
     }
 }
 

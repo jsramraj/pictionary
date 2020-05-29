@@ -21,9 +21,8 @@ const setCallbacks = function (onGameStart, onGameEnd, onRoundStart, onRoundEnd)
     roundEndCallback = onRoundEnd;
 }
 
-const createGame = function (roomName, noOfRounds, timeToGuess) {
+const createGame = function (noOfRounds, timeToGuess) {
     let game = new Game(noOfRounds, timeToGuess);
-    gameData[roomName] = game;
     return game;
 }
 

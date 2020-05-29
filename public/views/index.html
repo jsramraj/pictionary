@@ -110,10 +110,21 @@
 
     $('#create').submit(function (e) {
         e.preventDefault();
+
+        var player = { name: $('#admin_name').val() };
+        if (typeof (localStorage) != "undefined") {
+            let storedPlayer = localStorage.player;
+            if (typeof (storedPlayer) != "undefined") {
+                player = storedPlayer;
+            }
+        }
+
         var postData = {
-            playerName: $('#admin_name').val(),
-            noOfRounds: $('#no_of_rounds').val(),
-            timeToGuess: $('#time_to_guess').val()
+            player: player,
+            room: {
+                noOfRounds: $('#no_of_rounds').val(),
+                timeToGuess: $('#time_to_guess').val()
+            }
         };
         console.log(postData);
         console.log(JSON.stringify(postData));

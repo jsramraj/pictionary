@@ -1,22 +1,17 @@
 'use strict';
 
 class Room {
-    players = [];
+    playerIDs = [];
     game;
 
-    constructor(roomName, game) {
-        this.roomName = roomName;
-        this.game;
+    constructor(name, game) {
+        this.name = name;
+        this.game = game;
     }
 
-    addPlayerToRoom = function (player) {
-       this.players.push(player);
+    addPlayerToRoom = function (playerID) {
+       this.playerIDs.push(playerID);
     }
-
-    print() {
-        console.log(this.players.length);
-    }
-    
 }
 
 module.exports = Room

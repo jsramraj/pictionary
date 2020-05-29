@@ -36,14 +36,20 @@ app.get('/board', (req, res) => {
 });
 
 app.post('/createRoom', function (req, res) {
-    let room = roomManager.createRoom(req.body.noOfRounds, req.body.timeToGuess);
-    let player = playerManager.createPlayer(req.body.playerName, true);
-    roomManager.addPlayerToRoom(room.roomName, player);
+    var player = req.body.player;
+    if (typeof (player.id) == "undefined") {
+        //new player, let's create an id
+        player = playerManager.createPlayer(player.name);
+    }
+    player.isAdmin = true;
+    playerManager.addPlayer(player);
+
+    let room = roomManager.createRoom(req.body.room.noOfRounds, req.body.room.timeToGuess);
+    roomManager.addPlayerToRoom(room.name, player.id);
 
     var data = {
-        playerName: req.body.playerName,
-        isAdmin: true,
-        roomName: room.roomName,
+        player: player,
+        room: room,
     };
     res.send(data);
 });
