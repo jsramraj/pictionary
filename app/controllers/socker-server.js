@@ -1,5 +1,6 @@
 let roomManager = require('./room-manager')
 let gameManager = require('./game-manager')
+let playerManager = require('./player-manager')
 let scoreCard = require('./scorecard')
 
 let io;
@@ -21,8 +22,8 @@ const initiateSocketConnection = function (server) {
             io.sockets.in(data.roomName).emit('brush-size', data.brushSize);
         });
 
-        socket.on('join', function (room) {
-            handleJoin(room, socket);
+        socket.on('join', function (data) {
+            handleJoin(data, socket);
         });
 
         socket.on('message', function (data) {
@@ -37,26 +38,26 @@ const initiateSocketConnection = function (server) {
 
         socket.on('disconnect', () => {
             console.log(socket.id + ' disconnected');
-            let playerData = roomManager.getPlayerForSocket(socket.id);
+
+            let player = playerManager.getPlayerForSocket(socket.id);
             if (typeof (playerData) != "undefined") {
-                roomManager.removePlayerFromRoom(playerData.roomName, playerData.playerName);
-                io.sockets.in(playerData.roomName).emit('event', playerData.playerName + " has left");
+                let room = roomManager.getRoomForPlayerWithId(player.id)
+                roomManager.removePlayerFromRoom(room.name, player.id);
+                io.sockets.in(room.name).emit('event', player.name + " has left");
             }
         });
     });
 }
 
-function handleJoin(room, socket) {
-    let roomJson = JSON.parse(room);
-    let roomName = roomJson.roomName;
-    let playerName = roomJson.playerName;
-
-    roomManager.setSocketId(roomName, playerName, socket.id);
+function handleJoin(data, socket) {
+    let roomName = data.roomName;
+    var player = playerManager.getPlayer(data.player.id);
+    player.sockerId = socket.id;
 
     socket.join(roomName);
-    io.sockets.in(roomName).emit('connectToRoom', playerName + " has joined");
-    io.sockets.in(roomName).emit('event', playerName + " has joined");
-    console.log(playerName + ' has joined ' + roomName + ' socket id ' + socket.id);
+    io.sockets.in(roomName).emit('connectToRoom', player.name + " has joined");
+    io.sockets.in(roomName).emit('event', player.name + " has joined");
+    console.log(player.name + ' has joined ' + roomName + ' socket id ' + socket.id);
 }
 
 function onMessage(messageData) {

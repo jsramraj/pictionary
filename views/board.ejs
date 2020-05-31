@@ -115,15 +115,18 @@
     </div>
 </body>
 <script>
-    const socket = io.connect('https://play-pictionary.herokuapp.com/');
-    // const socket = io.connect('http://localhost:3300');
-    let roomData;
+    // const socket = io.connect('https://play-pictionary.herokuapp.com/');
+    const socket = io.connect('http://localhost:3300');
+    var room;
+    var player;
     var color = "#000";
 
     $(document).ready(function () {
         init();
-        joinRoom();
-        getPlayers();
+        initializeCanvas();
+        let joined = joinRoom();
+        if (joined === true)
+            getPlayers();
     });
 
     $('#play-button').click(function () {
@@ -188,19 +191,26 @@
         });
     }
 
-    var ctx;
-    var $canvas;
+
     function init() {
         if (typeof (sessionStorage) != "undefined") {
-            roomData = JSON.parse(sessionStorage.room);
-            if (roomData.isAdmin === true) {
+            console.log('room and player')
+            console.log(sessionStorage.room.name);
+            console.log(sessionStorage.player);
+            room = JSON.parse(sessionStorage.room);
+            player = JSON.parse(sessionStorage.player);
+            if (player.isAdmin === true) {
                 $('#overlay').css("display", "block");
             } else {
                 $('#overlay').css("display", "none");
             }
         }
-        $('#room-name-start').text('Private code: ' + roomData.roomName);
+        $('#room-name-start').text('Private code: ' + room.name);
+    }
 
+    var ctx;
+    var $canvas;
+    function initializeCanvas() {
         $canvas = $("#myCanvas");
         ctx = $canvas[0].getContext('2d');
 
@@ -249,21 +259,26 @@
     }
 
     function joinRoom() {
-        if (typeof (sessionStorage) != "undefined") {
-            socket.emit('join', sessionStorage.room);
+        if (typeof (room) != "undefined") {5
+            console.log(player.name +  'joining room ' + room.name);
+            socket.emit('join', { roomName: room.name, player: player });
+            return true;
+        } else {
+            //TODO: navigate to home screen
+            console.log('navigate to home screen');
+            return false;
         }
     }
 
     function getPlayers() {
-        if (typeof (sessionStorage) != "undefined") {
-            var jsonUserData = JSON.parse(sessionStorage.room);
-            let roomName = jsonUserData.roomName;
+        if (typeof (room) != "undefined") {
             $.ajax({
                 url: "/getPlayers",
                 type: "GET",
-                data: { roomName: roomName },
+                data: { roomName: room.name },
                 success: function (data) {
                     let players = JSON.parse(data);
+                    console.log(players);
                     let html = ejs.render(`
                         <? players.forEach(player => {?>
                         <tr>
@@ -272,7 +287,7 @@
                             <? } else {?>
                                 <td style="width:0%"></td>                        
                                 <? } ?>
-                            <td style="width:95%"><?= player.playerName ?> (Points: <?= player.score ?>)</td>
+                            <td style="width:95%"><?= player.name ?> (Points: <?= player.score ?>)</td>
                         </tr>
                         <?}) ?>`, { players: players },
                         { delimiter: '?' });
@@ -422,7 +437,7 @@
     })
 
     socket.on('connectToRoom', (message) => {
-        $('#room-name').text('Room: ' + roomData.roomName);
+        $('#room-name').text('Room: ' + room.name);
         getPlayers();
     });
 

@@ -89,9 +89,7 @@
             playerName: $('#player_name').val(),
             roomName: $('#room_name').val(),
         };
-        if (typeof (sessionStorage) != "undefined") {
-            sessionStorage.room = JSON.stringify(postData);
-        }
+
         $.ajax({
             url: "/joinRoom",
             type: "POST",
@@ -99,6 +97,8 @@
             data: postData,
             success: function (data) {
                 console.log(data);
+                sessionStorage.room = JSON.stringify(data.room);
+                sessionStorage.player = JSON.stringify(data.player);
                 var url = "/board";
                 window.location = url;
             },
@@ -111,13 +111,16 @@
     $('#create').submit(function (e) {
         e.preventDefault();
 
-        var player = { name: $('#admin_name').val() };
-        if (typeof (localStorage) != "undefined") {
-            let storedPlayer = localStorage.player;
+        var player = {};
+        console.log(player);
+        if (typeof (sessionStorage) != "undefined") {
+            let storedPlayer = JSON.parse(sessionStorage.player);
+            console.log("storedPlayer " + storedPlayer);
             if (typeof (storedPlayer) != "undefined") {
                 player = storedPlayer;
             }
         }
+        player.name = $('#admin_name').val();
 
         var postData = {
             player: player,
@@ -137,7 +140,9 @@
             success: function (data) {
                 console.log(data);
                 if (typeof (sessionStorage) != "undefined") {
-                    sessionStorage.room = JSON.stringify(data);
+                    sessionStorage.room = JSON.stringify(data.room);
+                    sessionStorage.player = JSON.stringify(data.player);
+                    console.log('sessionStorage.player ' + sessionStorage.player);
                 }
                 var url = "/board";
                 window.location = url;

@@ -36,11 +36,8 @@ app.get('/board', (req, res) => {
 });
 
 app.post('/createRoom', function (req, res) {
-    var player = req.body.player;
-    if (typeof (player.id) == "undefined") {
-        //new player, let's create an id
-        player = playerManager.createPlayer(player.name);
-    }
+    var playerData = req.body.player;
+    player = playerManager.createPlayer(playerData.name);
     player.isAdmin = true;
     playerManager.addPlayer(player);
 
@@ -51,17 +48,23 @@ app.post('/createRoom', function (req, res) {
         player: player,
         room: room,
     };
+    console.log(JSON.stringify(data));
     res.send(data);
 });
 
 app.post('/joinRoom', function (req, res) {
     console.log(req.body);
-    let player = playerManager.createPlayer(req.body.playerName, false);
-    let status = roomManager.addPlayerToRoom(req.body.roomName, player);
+    let player = playerManager.createPlayer(req.body.playerName);
+    playerManager.addPlayer(player);
+    let status = roomManager.addPlayerToRoom(req.body.roomName, player.id);
+    let room = roomManager.getRoom(req.body.roomName);
     console.log(status);
-    let data = { status: status };
+    var data = {
+        player: player,
+        room: room,
+    };
     res.status(status);
-    res.send(JSON.stringify(data));
+    res.send(data);
 });
 
 app.get('/getPlayers', function (req, res) {
