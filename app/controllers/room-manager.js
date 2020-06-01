@@ -82,6 +82,21 @@ const getRoom = function (roomName) {
     return room;
 }
 
+const setAsActivePlayer = function (players, index) {
+    players.forEach((player, _index) => {
+        player.active = (index == _index);
+    });
+}
+
+const startGame = function (room) {
+    let players = getPlayers(room.name);
+    room.activePlayerId = players[0].id;
+    setAsActivePlayer(players, 0);
+    // let game = GameManager.createGame(room.noOfRounds, room.timeToGuess);
+    // room.game = game;
+    GameManager.startGame(room);
+}
+
 const getPlayers = function (roomName) {
     let players = playerManager.getAllPlayers();
     var room = rooms.find(room => room.name == roomName);
@@ -98,6 +113,8 @@ const setSocketId = function (roomName, playerName, socketId) {
     }
 }
 
-module.exports = { createRoom, addPlayerToRoom, removePlayerFromRoom, getPlayer, 
+module.exports = {
+    createRoom, addPlayerToRoom, removePlayerFromRoom, getPlayer,
     getPlayerForSocket, getPlayers, getRoom, setSocketId,
-    getRoomForPlayerWithId }
+    getRoomForPlayerWithId, startGame
+}

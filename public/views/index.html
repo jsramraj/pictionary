@@ -114,10 +114,11 @@
         var player = {};
         console.log(player);
         if (typeof (sessionStorage) != "undefined") {
-            let storedPlayer = JSON.parse(sessionStorage.player);
-            console.log("storedPlayer " + storedPlayer);
+            let storedPlayer = sessionStorage.player
             if (typeof (storedPlayer) != "undefined") {
-                player = storedPlayer;
+                let storedPlayerJson = JSON.parse(storedPlayer);
+                console.log("storedPlayer " + storedPlayerJson);
+                player = storedPlayerJson;
             }
         }
         player.name = $('#admin_name').val();

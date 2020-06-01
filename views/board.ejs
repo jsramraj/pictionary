@@ -139,8 +139,7 @@
         console.log('send message');
         e.preventDefault(); // prevents page reloading
 
-        var jsonUserData = JSON.parse(sessionStorage.room);
-        var playerData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
+        var playerData = { playerId: player.id, roomName: room.name };
         var data = { message: $('#m').val(), playerData: playerData };
 
         socket.emit('message', data);
@@ -150,7 +149,7 @@
 
     $('#delete-button').click(function () {
         clearBoard();
-        socket.emit('clear', roomData.roomName);
+        socket.emit('clear', room.name);
     });
 
     $('#erase-button').click(function () {
@@ -160,19 +159,19 @@
 
     $('#brush-size-small').click(function () {
         $('#brush-size').css('font-size', '10px')
-        socket.emit('brush-size', { roomName: roomData.roomName, brushSize: 1 });
+        socket.emit('brush-size', { roomName: room.name, brushSize: 1 });
         setBrushSize(1);
     });
 
     $('#brush-size-medium').click(function () {
         $('#brush-size').css('font-size', '20px')
-        socket.emit('brush-size', { roomName: roomData.roomName, brushSize: 4 });
+        socket.emit('brush-size', { roomName: room.name, brushSize: 4 });
         setBrushSize(4);
     });
 
     $('#brush-size-large').click(function () {
         $('#brush-size').css('font-size', '30px')
-        socket.emit('brush-size', { roomName: roomData.roomName, brushSize: 8 });
+        socket.emit('brush-size', { roomName: room.name, brushSize: 8 });
         setBrushSize(8);
     });
 
@@ -246,21 +245,17 @@
     };
 
     async function sendEventToServer(_events) {
-        var jsonUserData = JSON.parse(sessionStorage.room);
         var drawingData = { events: _events, color: color };
-        var userData = { playerName: jsonUserData.playerName, roomName: jsonUserData.roomName };
+        var userData = { playerId: player.id, roomName: room.name };
         var data = { drawingData: drawingData, userData: userData };
         console.log(_events);
-        emitData(data);
-    }
-
-    async function emitData(data) {
         socket.emit('draw', data);
     }
 
     function joinRoom() {
-        if (typeof (room) != "undefined") {5
-            console.log(player.name +  'joining room ' + room.name);
+        if (typeof (room) != "undefined") {
+            5
+            console.log(player.name + 'joining room ' + room.name);
             socket.emit('join', { roomName: room.name, player: player });
             return true;
         } else {
@@ -292,13 +287,15 @@
                         <?}) ?>`, { players: players },
                         { delimiter: '?' });
                     $('#players').html(html);
+                    
+                    $('#myCanvas').css("pointer-events", (isCurrentUserActive === true ? "auto" : "none"));
                 }
             });
         }
     }
 
     function startGame() {
-        socket.emit('play', roomData.roomName);
+        socket.emit('play', room);
     }
 
     function draw(x, y, type) {
@@ -347,17 +344,15 @@
 
     var isCurrentUserActive = false;
     function updateRoundInfo(roundData) {
-
-        let activePlayer = roundData.round.players.find(player => player.active === true);
-        isCurrentUserActive = (activePlayer.playerName == roomData.playerName);
-        $('#myCanvas').css("pointer-events", (isCurrentUserActive === true ? "auto" : "none"));
-
         let html = ejs.render(`
                         Round <?= roundNo ?> of <?= noOfRounds ?>`,
-            { roundNo: roundData.round.roundNo, noOfRounds: roundData.noOfRounds },
+            { roundNo: roundData.round.roundNo, noOfRounds: roundData.room.game.noOfRounds },
             { delimiter: '?' });
         $('#round-info').html(html);
 
+        console.log('isCurrentUserActive ' + isCurrentUserActive);
+
+        isCurrentUserActive = (roundData.room.activePlayerId === player.id);
         let word = roundData.round.word.replace(/[^ ]/gi, '*');
         if (isCurrentUserActive === true) {
             $('#choosen-word').text(roundData.round.word);
@@ -449,12 +444,12 @@
         getPlayers();
     });
 
-    socket.on('roundStart', (round) => {
+    socket.on('roundStart', (data) => {
         var display = document.querySelector('#timer');
-        startTimer(round.round.timeToGuess, display);
-        updateRoundInfo(round);
-        hideRoundScoreboard();
+        startTimer(data.round.timeToGuess, display);
+        updateRoundInfo(data);
         getPlayers();
+        hideRoundScoreboard();
         clearBoard();
     });
 
@@ -473,7 +468,7 @@
         let messageJson = JSON.parse(messageData);
 
         let markup = '<tr><td>' +
-            messageJson.player.playerName + ": " + messageJson.message +
+            messageJson.player.name + ": " + messageJson.message +
             '</td></tr>';
         $('#messages').append(markup)
         document.getElementById('messages-section').scrollTop = 10000;

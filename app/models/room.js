@@ -3,6 +3,7 @@
 class Room {
     playerIDs = [];
     game;
+    activePlayerId;
 
     constructor(name, game) {
         this.name = name;

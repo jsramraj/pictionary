@@ -30,28 +30,29 @@ const getGame = function (roomName) {
     return gameData[roomName];
 }
 
-const startGame = function (roomName) {
-    let game = getGame(roomName);
-    gameStartCallback(game, roomName);
-    setAsActivePlayer(roomName, 0);
-    let round = createRound(roomName, true);
-    startRound(round, roomName);
+const startGame = function (room) {
+    let game = room.game;
+    gameStartCallback(room);
+    // setAsActivePlayer(room, 0);
+    let round = createRound(room, true);
+    game.round = round;
+    startRound(round, room);
     return round;
 }
 
-const createRound = function (roomName, newRound) {
-    let game = gameData[roomName];
+const createRound = function (room, newRound) {
+    let game = room.game;
     if (typeof (game) == "undefined") {
         return undefined;
     }
     if (game.currentRound < game.noOfRounds) {
         if (newRound === true)
             game.currentRound++;
-        let word = wordGenerator.getRandomWord(roomName, 'medium');
+        let word = wordGenerator.getRandomWord(room.name, 'medium');
         console.log('random word ' + word);
         let round = new Round(game.currentRound, game.timeToGuess, word);
-        roundData[roomName] = round;
-        round.players = players[roomName];
+        // roundData[roomName] = round;
+        // round.players = players[roomName];
 
         return round;
     }
@@ -86,13 +87,13 @@ const updateFullScore = function (roomName, score) {
 
 var guessTimer;
 var timerToNextRound;
-const startRound = function (round, roomName) {
+const startRound = function (round, room) {
     if (typeof (round) == "undefined") {
         return;
     }
-    roundStartCallback(getGame(roomName), round, roomName);
+    roundStartCallback(room, round);
     console.log('setting time out: ' + round.timeToGuess);
-    guessTimer = setTimeout(endTurn, round.timeToGuess * 1000, roomName);
+    guessTimer = setTimeout(endTurn, round.timeToGuess * 1000, room.name);
 }
 
 const startTurn = function (roomName) {
@@ -132,8 +133,8 @@ const endTurn = function (roomName) {
     timerToNextRound = setTimeout(startTurn, 5 * 1000, roomName);
 }
 
-const validateGuess = function (guessedWord, roomName) {
-    let round = roundData[roomName];
+const validateGuess = function (guessedWord, room) {
+    let round = room.game.round;
     if (typeof (round) != "undefined") {
         return round.word == guessedWord;
     }

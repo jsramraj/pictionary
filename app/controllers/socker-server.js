@@ -30,10 +30,10 @@ const initiateSocketConnection = function (server) {
             onMessage(data);
         });
 
-        socket.on('play', function (roomName) {
-            console.log('creating round for room ' + roomName);
-            let round = gameManager.startGame(roomName);
-            let game = gameManager.getGame(roomName);
+        socket.on('play', function (roomData) {
+            let room = roomManager.getRoom(roomData.name);
+            console.log('creating round for room ' + room.name);
+            roomManager.startGame(room);
         });
 
         socket.on('disconnect', () => {
@@ -62,49 +62,49 @@ function handleJoin(data, socket) {
 
 function onMessage(messageData) {
     let playerData = messageData.playerData;
-    let player = roomManager.getPlayer(playerData.roomName, playerData.playerName);
-    let data = {
+    let room = roomManager.getRoom(playerData.roomName);
+
+    let player = playerManager.getPlayer(playerData.playerId);
+     let data = {
         player: player,
         message: messageData.message
     }
-    let guessed = gameManager.validateGuess(messageData.message, playerData.roomName);
+    let guessed = gameManager.validateGuess(messageData.message, room);
     if (guessed === true) {
-        let room = roomManager.getRoom(playerData.roomName);
         gameManager.updateScore(room, playerData.playerName);
-        io.sockets.in(playerData.roomName).emit('event', playerData.playerName + ' guessed the word');
+        io.sockets.in(playerData.roomName).emit('event', player.name + ' guessed the word');
         console.log(playerData.playerName + ' guessed the word');
     } else {
         io.sockets.in(playerData.roomName).emit('message', JSON.stringify(data));
-        console.log(playerData.playerName + ': ' + messageData.message);
+        console.log(player.name + ': ' + messageData.message);
     }
 }
 
 
-function onGameStarted(game, roomName) {
-    console.log('Game started for room: ' + roomName);
-    io.sockets.in(roomName).emit('gameStart', {});
+function onGameStarted(room) {
+    console.log('Game started for room: ' + room.name);
+    io.sockets.in(room.name).emit('gameStart', {});
 }
 
-function onGameEnded(game, roomName) {
-    let players = roomManager.getPlayers(roomName);
-    console.log('Game ended for room: ' + roomName);
-    io.sockets.in(roomName).emit('gameEnd', players);
+function onGameEnded(room) {
+    let players = roomManager.getPlayers(room.name);
+    console.log('Game ended for room: ' + room.name);
+    io.sockets.in(room.name).emit('gameEnd', players);
 }
 
-function onRoundStarted(game, round, roomName) {
-    console.log('Round ' + round.roundNo + ' has started for room: ' + roomName + ', word: ' + round.word);
-    io.sockets.in(roomName).emit('roundStart', {
-        noOfRounds: game.noOfRounds,
-        round: round
+function onRoundStarted(room, round) {
+    console.log('Round ' + round.roundNo + ' has started for room: ' + room.name + ', word: ' + round.word);
+    io.sockets.in(room.name).emit('roundStart', {
+        room: room,
+        round: round,        
     });
 }
 
-function onRoundEnded(game, round, roomName) {
-    console.log('Round ' + round.roundNo + ' has ended for room: ' + roomName);
+function onRoundEnded(room, round) {
+    console.log('Round ' + round.roundNo + ' has ended for room: ' + room.name);
     let scores = {};
-    let room = roomManager.getRoom(roomName);
 
-    room.players.forEach(player => {
+    room.getPlayers().forEach(player => {
         var score = round.scores[player.playerName];
         if (typeof (score) == "undefined") {
             score = 0;
@@ -113,7 +113,7 @@ function onRoundEnded(game, round, roomName) {
         console.log('current round score for ' + player.playerName + ': ' + scores[player.playerName]);
     });
 
-    io.sockets.in(roomName).emit('roundEnd', {
+    io.sockets.in(room.name).emit('roundEnd', {
         roundNo: round.roundNo,
         noOfRounds: game.noOfRounds,
         timeToGuess: round.timeToGuess,
