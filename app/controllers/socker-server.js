@@ -71,9 +71,9 @@ function onMessage(messageData) {
     }
     let guessed = gameManager.validateGuess(messageData.message, room);
     if (guessed === true) {
-        gameManager.updateScore(room, playerData.playerName);
+        gameManager.updateScore(room, player.id);
         io.sockets.in(playerData.roomName).emit('event', player.name + ' guessed the word');
-        console.log(playerData.playerName + ' guessed the word');
+        console.log(player.name + ' guessed the word');
     } else {
         io.sockets.in(playerData.roomName).emit('message', JSON.stringify(data));
         console.log(player.name + ': ' + messageData.message);
@@ -102,20 +102,13 @@ function onRoundStarted(room, round) {
 
 function onRoundEnded(room, round) {
     console.log('Round ' + round.roundNo + ' has ended for room: ' + room.name);
-    let scores = {};
 
-    room.getPlayers().forEach(player => {
-        var score = round.scores[player.playerName];
-        if (typeof (score) == "undefined") {
-            score = 0;
-        }
-        scores[player.playerName] = score;
-        console.log('current round score for ' + player.playerName + ': ' + scores[player.playerName]);
-    });
+    let players = roomManager.getPlayers(room.name);
+    let scores = gameManager.saveScore(room, players);
 
     io.sockets.in(room.name).emit('roundEnd', {
         roundNo: round.roundNo,
-        noOfRounds: game.noOfRounds,
+        noOfRounds: room.game.noOfRounds,
         timeToGuess: round.timeToGuess,
         scores: scores,
     });

@@ -1,14 +1,24 @@
 
 scoreCard = {};
 
-const updateScoreCard = function (round, roomName) {
-    let currentScore = scoreCard[roomName];
-    if (typeof (currentScore) == "undefined") {
-        currentScore = [];
-        scoreCard[roomName] = currentScore;
-    }
-    currentScore.push(round);
-    console.log('score ' + currentScore);
+const updateScoreCard = function (room, players) {
+    let round = room.game.round;
+
+    players.forEach((player, index) => {
+        player.score = player.score || 0;
+        player.score += round.scores[player.id];
+    })
+}
+
+const getRoundScores = function (round, players) {
+    var scores = [];
+    players.forEach((player, index) => {
+        var score = {};
+        score["name"] = player.name;
+        score["score"] = round.scores[player.id] || 0;
+        scores.push(score);
+    });
+    return scores;
 }
 
 const getScoreCard = function (roomName) {
@@ -35,4 +45,4 @@ const sumOfScore = function (roomName) {
     return scores;
 }
 
-module.exports = { updateScoreCard, getScoreCard, sumOfScore }
+module.exports = { updateScoreCard, getRoundScores, getScoreCard, sumOfScore }

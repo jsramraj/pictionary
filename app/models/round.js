@@ -1,6 +1,7 @@
 'use strict';
 
 class Round {
+    scoreboard;
     scores = {};
     players = [];
     constructor(roundNo, timeToGuess, word) {

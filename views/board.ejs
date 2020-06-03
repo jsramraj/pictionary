@@ -287,7 +287,7 @@
                         <?}) ?>`, { players: players },
                         { delimiter: '?' });
                     $('#players').html(html);
-                    
+
                     $('#myCanvas').css("pointer-events", (isCurrentUserActive === true ? "auto" : "none"));
                 }
             });
@@ -362,20 +362,28 @@
     }
 
     function displayRoundScoreboard(round) {
+        console.log(round);
         let scores = round.scores;
+        console.log(scores);
+        scores.forEach(_score => {
+            console.log(_score);
+            console.log(_score['name']);
+            console.log(_score['score']);
+        });
         let html = ejs.render(`
                     <colgroup>
                             <col span="1" style="width: 75%;">
                             <col span="1" style="width: 25%;">
                     </colgroup>                    
-                    <? for (var playerName in scores) {?>
+                    <? scores.forEach(_score => {?>
                     <tr>
-                        <td><?= playerName ?></td>
-                        <td><?= scores[playerName] ?></td>
+                        <td><?= _score['name'] ?></td>
+                        <td><?= _score['score'] ?></td>
                     </tr>
-                    <?} ?>`,
+                    <?}) ?>`,
             { scores: scores },
             { delimiter: '?' });
+        console.log(html);
         $('#round-scoreboard-table').html(html);
         $('#round-scoreboard').css("display", "block");
     }
